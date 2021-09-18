@@ -10,8 +10,8 @@ class R1_LondonMapModern:
 
     def render(self, graph):
         for edge in graph.edge_list:
-            print([edge.loc1[0], edge.loc1[1], edge.loc2[0], edge.loc2[1]])
-            #self.image.ImageDraw.line(,
-                                      #fill=edge.color, width=10, joint="curve")
+            linep = [edge.loc1[0], edge.loc1[1], edge.loc2[0], edge.loc2[1]]
+            draw = ImageDraw.Draw(self.image)
+            draw.line(linep, fill=edge.color, width=8, joint="curve")
         return self.image
 

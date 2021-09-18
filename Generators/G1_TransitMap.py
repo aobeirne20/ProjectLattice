@@ -19,7 +19,6 @@ class G1_TransitMap:
                             (244, 169, 190, 255), (161, 165, 167, 255), (155, 0, 88, 255), (0, 0, 0, 255),
                             (0, 25, 168, 255), (0, 152, 216, 255), (147, 206, 186, 255)]
         random.shuffle(line_color_codes)
-        #OVERRIDE NUM LINES
         num_lines = 11
 
         line_list = []
@@ -34,28 +33,63 @@ class G1_TransitMap:
         dxdn_segs = []
 
         for line in line_list:
-            # Pick prime direction NorthSouth=1, EastWest=2, NESW=3, NWSE=4
             line.direction.random_direction()
+            line.starting_direction = line.direction
 
             # Pick starting location
             line.starting_loc = [random.randint(xs*0.25, xs-xs*0.25), random.randint(ys*0.25, ys-ys*0.25)]
             current_loc = line.starting_loc
-            termination_chance = 0;
+            termination_chance = 0
+            change_counter = 0
+            has_flipped = False
+            flip_now = False
 
-            while termination_chance<100:
+            while True:
                 distance = random.randint(20, 100)
-                line.direction.change_direction(np.random.choice([-1, 0, 1], p=[0.1, 0.8, 0.1]))
-                travel = list(line.direction.give_dir()*distance)
+                if flip_now:
+                    line.flip_line()
+                    line.starting_direction.flip_direction()
+                    line.direction = line.starting_direction
+
+                    current_loc = line.starting_loc
+                    termination_chance = 0;
+                    flip_now = False
+                else:
+                    change_val = np.random.choice([-1, 0, 1], p=[0.1, 0.8, 0.1])
+                    if change_val != 0 & change_counter <= 0:
+                        change_counter = random.randint(60, 200)
+                        line.direction.change_direction(change_val)
+                    elif change_val == 0:
+                        change_counter -= distance
+
+                travel = list(np.multiply(line.direction.give_dir(),distance))
                 travel2 = [int(x) for x in travel]
-                next_loc = current_loc + travel2
+                next_loc = list(np.add(current_loc, travel2))
+
+                termination_chance = termination_chance + int(random.randint(1, 3) * distance / 20)
+                if termination_chance > 100:
+                    if has_flipped:
+                        break
+                    else:
+                        has_flipped = True
+                        flip_now = True
+                        pass
 
                 if next_loc[0] > int(self.size[0]*0.90) | next_loc[0] < int(self.size[0]*0.10):
-                    termination_chance = 100
-                    break
+                    if has_flipped:
+                        break
+                    else:
+                        has_flipped = True
+                        flip_now = True
+                        pass
 
                 if next_loc[1] > int(self.size[1]*0.90) | next_loc[1] < int(self.size[1]*0.10):
-                    termination_chance = 100
-                    break
+                    if has_flipped:
+                        break
+                    else:
+                        has_flipped = True
+                        flip_now = True
+                        pass
 
                 line.add_spline(current_loc, next_loc)
                 self.graph.add_edge(line.color_code, current_loc, next_loc)
@@ -69,62 +103,16 @@ class G1_TransitMap:
 
                 # Vertical
                 elif line.direction.direction == 3 | line.direction.direction == 7:
-                    horz_segs.append([current_loc, next_loc])
+                    vert_segs.append([current_loc, next_loc])
 
                 # Dxdown
                 elif line.direction.direction == 4 | line.direction.direction == 8:
                     dxdn_segs.append([current_loc, next_loc])
 
-                termination_chance = termination_chance + int(random.randint(1, 5)*distance/100)
                 current_loc = next_loc
 
-            line.flip_line()
-            line.direction.flip_direction()
 
-            current_loc = line.starting_loc
-            termination_chance = 0;
-
-            while termination_chance < 100:
-                distance = random.randint(20, 100)
-                line.direction.change_direction(np.random.choice([-1, 0, 1], p=[0.1, 0.8, 0.1]))
-                travel = list(line.direction.give_dir()*distance)
-                travel2 = [int(x) for x in travel]
-                next_loc = current_loc + travel2
-
-
-                if next_loc[0] > int(self.size[0] * 0.90) | next_loc[0] < int(self.size[0] * 0.10):
-                    termination_chance = 100
-                    break
-
-                if next_loc[1] > int(self.size[1] * 0.90) | next_loc[1] < int(self.size[1] * 0.10):
-                    termination_chance = 100
-                    break
-
-                line.add_spline(current_loc, next_loc)
-                self.graph.add_edge(line.color_code, current_loc, next_loc)
-                # Horizontal
-                if line.direction.direction == 1 | line.direction.direction == 5:
-                    horz_segs.append([current_loc, next_loc])
-
-                # Dxup
-                elif line.direction.direction == 2 | line.direction.direction == 6:
-                    dxup_segs.append([current_loc, next_loc])
-
-                # Vertical
-                elif line.direction.direction == 3 | line.direction.direction == 7:
-                    horz_segs.append([current_loc, next_loc])
-
-                # Dxdown
-                elif line.direction.direction == 4 | line.direction.direction == 8:
-                    dxdn_segs.append([current_loc, next_loc])
-
-                termination_chance = termination_chance + int(random.randint(1, 5) * distance / 100)
-                current_loc = next_loc
         return self.graph
-
-
-
-
 
 
 class Line:
@@ -137,6 +125,7 @@ class Line:
         self.spline = []
         self.direction = Direction()
         self.starting_loc = None
+        self.starting_direction = None
 
     def add_spline(self, loc1, loc2):
         self.spline.append((loc1, loc2))
@@ -164,10 +153,27 @@ class Direction:
             self.direction = 8
 
     def flip_direction(self):
-        if self.direction > 4:
-            self.direction -= 4
-        else:
-            self.direction += 4
+        if self.direction == 1:
+            self.direction = 5
+        elif self.direction == 2:
+            self.direction = 6
+        elif self.direction == 3:
+            self.direction = 7
+        elif self.direction == 4:
+            self.direction = 8
+        elif self.direction == 5:
+            self.direction = 1
+        elif self.direction == 6:
+            self.direction = 2
+        elif self.direction == 7:
+            self.direction = 3
+        elif self.direction == 8:
+            self.direction = 4
+
+
+
+
+
 
 
 
