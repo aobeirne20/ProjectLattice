@@ -1,12 +1,23 @@
-import ImageGen
+import ArtDirector as AD
 
-generatedImage = ImageGen.ImageGen(size=(2000, 2000))
-generatedImage.background(background_colors=(255, 255, 255, 255), background_img=None)
-generatedImage.generate(generator_name="G2_TransitMapv2", gparams={})
-generatedImage.render(renderer_name="R2_LondonMapModernv2", rparams={})
-generatedImage.show()
-generatedImage.invert()
-generatedImage.grayscale()
-generatedImage.goldscale()
-generatedImage.brightline()
+
+director = AD.ArtDirector()
+director.calc_order_dist(art_order={"London": 1863, "Paris": 1900, "New York": 1904,
+                                    "Moscow": 1935, "Tokyo": 1927, "Beijing": 1971},
+                         art_types_n={"Signature": 1, "Gold": 10, "Gold_Invert": 5},
+                         art_types_p={"Color": -1, "Color_Invert": 0.10, "Dark": 0.10, "Dark_Invert": 0.01,
+                                      "Brightline": 0.10, "Brightline_Invert": 0.01,
+                                       "Grey": 0.20, "Grey_Invert": 0.02})
+director.create_gallery_structure()
+director.i_sell_hotdogs("London")
+
+
+
+
+
+
+
+
+
+
 
