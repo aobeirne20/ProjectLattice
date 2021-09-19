@@ -34,10 +34,12 @@ class ArtDirector:
 
     def i_am_a_creative_type(self):
         for city in self.art_order:
-            print(f"Beginning generation for {city['City']}:")
+            print(f"Starting generation for {city['City']}:")
             for piece_type in city["RList"]:
                 print(piece_type)
 
-    def i_sell_hotdogs(self, cities):
+    def i_sell_hotdogs(self, cities, art_type):
         for city in cities:
-            ig = IG.ImageGen(city=city, type="Color")
+            print(f"Starting probability-blind generation for {city}:")
+            ig = IG.ImageGen(city=city, art_type=art_type)
+

@@ -1,5 +1,7 @@
 import ArtDirector as AD
 
+import style_data
+
 
 director = AD.ArtDirector()
 director.calc_order_dist(art_order={"London": 1863, "Paris": 1900, "New York": 1904,
@@ -9,8 +11,9 @@ director.calc_order_dist(art_order={"London": 1863, "Paris": 1900, "New York": 1
                                       "Brightline": 0.10, "Brightline_Invert": 0.01,
                                        "Grey": 0.20, "Grey_Invert": 0.02})
 director.create_gallery_structure()
-director.i_sell_hotdogs("London")
+director.i_sell_hotdogs(cities=["London"], art_type="Color")
 
+print()
 
 
 

@@ -1,16 +1,16 @@
+import numpy as np
 
 class Map:
-    def __init__(self):
+    def __init__(self, xgs, ygs):
         self.origin_vertex = None
         self.line_list = []
         self.locus_list = []
-        self.feature_list = []
+        self.primary_feature_list = []
+        self.secondary_feature_list = []
+        self.collision_array = np.empty((ygs, xgs), dtype=object)
 
     def add_line(self, color, style, loc_list):
         self.line_list.append(Line(color, style, loc_list))
-
-    def add_feature(self, name, loc_list):
-        self.feature_list.append(Feature(name, loc_list))
 
 
 class Line:
@@ -26,7 +26,14 @@ class Locus:
         self.loc = loc
 
 
-class Feature:
-    def __init__(self, name, loc_list):
-        self.name = name
+class River:
+    def __init__(self, renderer_name, loc_list):
+        self.renderer_name = renderer_name
         self.loc_list = loc_list
+
+
+class IntersectNode:
+    __slots__ = ['name', 'orientation']
+    def __init__(self, name, orientation):
+        self.name = name
+        self.orientation = orientation
