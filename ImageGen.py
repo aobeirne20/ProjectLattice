@@ -28,6 +28,7 @@ class ImageGen:
         self.background()
         self.generate()
         self.render()
+        self.post_process()
 
     def background(self):
         if self.art_type == "Dark" or self.art_type == "Dark_Invert":
@@ -38,15 +39,17 @@ class ImageGen:
                                                 self.SD.map_style_guide[self.city]['default_background'])
 
     def generate(self):
-        generator = citygen_dict[self.city](art_type=self.art_type, size_tp=self.size_tp)
+        generator = citygen_dict[self.city](size_tp=self.size_tp)
         self.map = generator.give_map()
 
     def render(self):
-        renderer = cityren_dict[self.city](art_type=self.art_type, size_tp=self.size_tp, mapp=self.map)
-        #self.generated_img = renderer.give_render()
+        renderer = cityren_dict[self.city](art_type=self.art_type, size_tp=self.size_tp, net_map=self.map)
+        self.generated_img = renderer.give_render()
 
     def post_process(self):
-        pass
+        self.background_img.paste(self.generated_img, mask=self.generated_img)
+        self.post_process_img = self.background_img
+        self.final_img = self.post_process_img
 
     def ex_nihilo_res(self):
-        return self.final_img
+        return self.final_img, {"REPLACE": "THIS WITH THE ACTUAL METADATA"}

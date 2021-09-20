@@ -35,28 +35,31 @@ class ArtDirector:
                 os.makedirs(f"Gallery/Batch_{self.batch_value:03d}/{city['City']}/{art_type}")
 
     def i_am_a_creative_type(self):
+        num = 0
         for city in self.art_order:
             print(f"Starting generation for {city['City']}:")
-            for art_type, num in enumerate(city["RList"]):
+            for art_type in city["RList"]:
                 ig = IG.ImageGen(city=city, art_type=art_type)
                 image, metadata = ig.ex_nihilo_res()
                 image.save(f"Gallery/Batch_{self.batch_value:03d}/All/RapidTopology_{num:05d}", format=".png")
                 image.save(f"Gallery/Batch_{self.batch_value:03d}/{city['City']}/All/RapidTopology_{num:05d}", format=".png")
                 image.save(f"Gallery/Batch_{self.batch_value:03d}/{city['City']}/{art_type}RapidTopology_{num:05d}", format=".png")
-
                 with open(f"Gallery/Batch_{self.batch_value:03d}/All/RapidTopology_{num:05d}.json", 'w') as outfile:
                     json.dump(metadata, outfile)
                 with open(f"Gallery/Batch_{self.batch_value:03d}/{city['City']}/All/RapidTopology_{num:05d}.json", 'w') as outfile:
                     json.dump(metadata, outfile)
                 with open(f"Gallery/Batch_{self.batch_value:03d}/{city['City']}/{art_type}RapidTopology_{num:05d}.json", 'w') as outfile:
                     json.dump(metadata, outfile)
+                num += 1
 
     def i_sell_hotdogs(self, cities, art_type):
-        for city, num in enumerate(cities):
+        num = 0
+        for city in cities:
             print(f"Starting probability-blind generation for {city}:")
             ig = IG.ImageGen(city=city, art_type=art_type)
             image, metadata = ig.ex_nihilo_res()
-            image.save(f"RapidTopology_{num:05d}", format=".png")
+            image.save(f"RapidTopology_{num:05d}.png")
             with open(f"RapidTopology_{num:05d}.json", 'w') as outfile:
                 json.dump(metadata, outfile)
+            num += 1
 
