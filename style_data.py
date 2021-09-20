@@ -2,9 +2,8 @@
 class StyleDatabase:
     map_style_guide = {
         "London": {
-             "x_size": 12000,
-             "y_size": 8000,
-             "grid_scale": 40,
+             "x_size": 6000,
+             "y_size": 4000,
              "default_background": (255, 255, 255, 255),
              "dark_background": (0, 0, 0, 255)},
          "Paris": {
