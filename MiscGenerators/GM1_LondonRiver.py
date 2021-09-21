@@ -1,10 +1,12 @@
 import random
 import numpy as np
 
+import style_data as sd
 import geometric_elements as ge
 import Map as map
 
 curve_scale = 50
+curve_scale = curve_scale * sd.StyleDatabase.t_scale
 ftc_dict = {"up": {"type": 90, "orientation": 0, "chirality": "L", "transform": (curve_scale, -1*curve_scale)},
             "down": {"type": 90, "orientation": 0, "chirality": "R", "transform": (curve_scale, curve_scale)},
             "dxup": {"type": 45, "orientation": 0, "chirality": "Ls", "transform": (2*curve_scale, -1*curve_scale)},
@@ -13,8 +15,6 @@ ctf_dict = {"up": {"type": 90, "orientation": 90, "chirality": "R", "transform":
             "down": {"type": 90, "orientation": 270, "chirality": "L", "transform": (curve_scale, curve_scale)},
             "dxup": {"type": 45, "orientation": 90, "chirality": "Rd", "transform": (2*curve_scale, -1*curve_scale)},
             "dxdn": {"type": 45, "orientation": 270, "chirality": "Ld", "transform": (2*curve_scale, curve_scale)}}
-
-
 
 
 class GM1_LondonRiver:
@@ -44,13 +44,13 @@ class GM1_LondonRiver:
                 continue
             current_location = self.joint_ctf(current_location, current_dir)
             current_location = self.step_flat(current_location)
-            if current_location[0] >= self.xs:
+            if current_location[0] >= int(self.xs*99/100):
                 run_course = True
 
         return self.render_list
 
     def step_flat(self, cur_l):
-        next_distance = random.randint(int(self.xs / 20), int(self.xs / 10))
+        next_distance = random.randint(int(self.xs / 20), int(self.xs / 6))
         next_l = (cur_l[0] + next_distance, cur_l[1])
         self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=0))
         return next_l
@@ -74,7 +74,7 @@ class GM1_LondonRiver:
                 next_l = (cur_l[0], cur_l[1] + next_distance)
                 self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=270))
         elif current_dir == "dxup" or current_dir == "dxdn":
-            next_distance = random.randint(int(self.ys / 10), int(self.ys / 4))
+            next_distance = random.randint(int(self.ys / 14), int(self.ys / 6))
             if current_dir == "dxup":
                 next_l = (cur_l[0] + next_distance, cur_l[1] - next_distance)
                 self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=45))

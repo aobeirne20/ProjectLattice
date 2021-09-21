@@ -58,6 +58,7 @@ class ArtDirector:
             print(f"Starting probability-blind generation for {city}:")
             ig = IG.ImageGen(city=city, art_type=art_type)
             image, metadata = ig.ex_nihilo_res()
+            image.show() # REMOVE THIS LATER
             image.save(f"RapidTopology_{num:05d}.png")
             with open(f"RapidTopology_{num:05d}.json", 'w') as outfile:
                 json.dump(metadata, outfile)

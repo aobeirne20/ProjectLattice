@@ -1,5 +1,9 @@
 
 class StyleDatabase:
+    aa_scale = 1
+    map_scale = 1
+    t_scale = aa_scale * map_scale
+
     map_style_guide = {
         "London": {
              "x_size": 6000,
@@ -56,7 +60,7 @@ class StyleDatabase:
         "London Tram": {
              "city": "London",
              "color": (0, 189, 25, 255),
-             "type": "heavy",
+             "type": "tram",
              "style": "double"},
         "Elizabeth": {
              "city": "London",

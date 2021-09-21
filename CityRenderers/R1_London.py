@@ -1,4 +1,5 @@
 from MiscRenderers import RM1_LondonRiver
+from LineRenderers import LR1_LondonNormal
 
 import style_data
 import PIL
@@ -16,12 +17,18 @@ class R1_London:
         self.slice_collector = PIL.Image.new('RGBA', size_tp, (0, 0, 0, 0))
 
         self.render_primary_features()
+        self.render_lines()
 
     def render_primary_features(self):
         for feature in self.map.primary_feature_list:
             if feature.name == "LondonRiver":
                 rm = RM1_LondonRiver.RM1_LondonRiver(self.xs, self.ys, feature.render_list)
                 self.render_slices.append(rm.render())
+
+    def render_lines(self):
+        for line in self.map.line_list:
+            rm = LR1_LondonNormal.LR1_LondonNormal(self.xs, self.ys, line.render_list, style=line.style)
+            self.render_slices.append(rm.render())
 
     def give_render(self):
         for r_slice in self.render_slices:

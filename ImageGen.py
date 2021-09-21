@@ -22,7 +22,10 @@ class ImageGen:
         self.post_process_img = None
         self.final_img = None
 
-        self.size_tp = (self.SD.map_style_guide[self.city]['x_size'], self.SD.map_style_guide[self.city]['y_size'])
+        self.size_og = (int(self.SD.map_style_guide[self.city]['x_size'] * self.SD.map_scale),
+                        int(self.SD.map_style_guide[self.city]['y_size'] * self.SD.map_scale))
+        self.size_s = (int(self.SD.map_style_guide[self.city]['x_size'] * self.SD.t_scale),
+                        int(self.SD.map_style_guide[self.city]['y_size'] * self.SD.t_scale))
 
         # Being active processes
         self.background()
@@ -32,24 +35,24 @@ class ImageGen:
 
     def background(self):
         if self.art_type == "Dark" or self.art_type == "Dark_Invert":
-            self.background_img = PIL.Image.new('RGBA', self.size_tp,
+            self.background_img = PIL.Image.new('RGBA', self.size_s,
                                                 self.SD.map_style_guide[self.city]['dark_background'])
         else:
-            self.background_img = PIL.Image.new('RGBA', self.size_tp,
+            self.background_img = PIL.Image.new('RGBA', self.size_s,
                                                 self.SD.map_style_guide[self.city]['default_background'])
 
     def generate(self):
-        generator = citygen_dict[self.city](size_tp=self.size_tp)
+        generator = citygen_dict[self.city](size_tp=self.size_s)
         self.map = generator.give_map()
 
     def render(self):
-        renderer = cityren_dict[self.city](art_type=self.art_type, size_tp=self.size_tp, net_map=self.map)
+        renderer = cityren_dict[self.city](art_type=self.art_type, size_tp=self.size_s, net_map=self.map)
         self.generated_img = renderer.give_render()
 
     def post_process(self):
         self.background_img.paste(self.generated_img, mask=self.generated_img)
         self.post_process_img = self.background_img
-        self.final_img = self.post_process_img
+        self.final_img = self.post_process_img.resize(self.size_og, resample=PIL.Image.ANTIALIAS)
 
     def ex_nihilo_res(self):
         return self.final_img, {"REPLACE": "THIS WITH THE ACTUAL METADATA"}

@@ -5,17 +5,21 @@ import PIL
 from PIL import Image
 import style_data as sd
 
-class RM1_LondonRiver:
-    def __init__(self, xs, ys, render_path):
+
+class LR1_LondonNormal:
+    def __init__(self, xs, ys, render_path, style):
         self.xs = xs
         self.ys = ys
         self.render_path = render_path
+        self.style = style
 
     def render(self):
         img_slice = PIL.Image.new('RGBA', (self.xs, self.ys), color=(0, 0, 0, 0))
-        # Custom River Pen
-        pens = [aggdraw.Pen((0, 180, 241, 255), 50*sd.StyleDatabase.t_scale),
-                aggdraw.Pen((199, 234, 252, 255), 40*sd.StyleDatabase.t_scale)]
+        if self.style["style"] == "double":
+            pens = [aggdraw.Pen(self.style["color"], 18*sd.StyleDatabase.t_scale),
+                    aggdraw.Pen((255, 255, 255, 255), 10*sd.StyleDatabase.t_scale)]
+        if self.style["style"] == "single":
+            pens = [aggdraw.Pen(self.style["color"], 18*sd.StyleDatabase.t_scale)]
         draw = aggdraw.Draw(img_slice)
         draw.setantialias(False)
 
@@ -34,5 +38,3 @@ class RM1_LondonRiver:
 
         draw.flush()
         return img_slice
-
-

@@ -1,4 +1,3 @@
-import aggdraw
 import math
 
 
@@ -7,6 +6,8 @@ class Segment:
         self.loc1 = loc1
         self.loc2 = loc2
         self.orientation = orientation
+        self.sandwich_R = None
+        self.sandwich_L = None
 
     def render(self, pen, draw):
         draw.line((self.loc1[0], self.loc1[1],
@@ -17,11 +18,16 @@ def arc_builder(arc_type, loc1, loc2, orientation, chirality, curve_scale):
     if arc_type == 45:
         return Arc45(loc1, loc2, orientation, chirality, curve_scale)
     if arc_type == 90:
-        return Arc90(loc1, orientation, chirality, curve_scale)
+        return Arc90(loc1, loc2, orientation, chirality, curve_scale)
 
 
 class Arc90:
-    def __init__(self, loc1, orientation, chirality, curve_scale):
+    def __init__(self, loc1, loc2, orientation, chirality, curve_scale):
+        self.loc1 = loc1
+        self.loc2 = loc2
+        self.orientation = orientation
+        self.sandwich_R = None
+        self.sandwich_L = None
 
         if chirality == 'R':
             if orientation == 0:
@@ -61,6 +67,8 @@ class Arc45:
         self.loc2 = loc2
         self.orientation = orientation
         self.chirality = chirality
+        self.sandwich_R = None
+        self.sandwich_L = None
 
         self.intro_seg = None
         self.outro_seg = None
