@@ -3,25 +3,8 @@ import random as r
 import numpy as np
 
 import geometric_elements as ge
-import LG1_LondonNormalHelper as lnh
-
-
-straight_unit_vectors = {0: (1, 0),
-                        45: (math.sqrt(0.5), -1*math.sqrt(0.5)),
-                        90: (0, -1),
-                        135: (-1*math.sqrt(0.5), -1*math.sqrt(0.5)),
-                        180: (-1, 0),
-                        225: (-1*math.sqrt(0.5), math.sqrt(0.5)),
-                        270: (0, 1),
-                        315: (math.sqrt(0.5), math.sqrt(0.5)),
-                        360: (1, 0)}
-rd_to_curve_displacer = {315: 0, 45: 90, 135: 180, 225: 270}
-ld_to_curve_displacer = {}
-curve_displacement = {90: np.array(([1], [-1])), -90: np.array(([1], [1])), 45: np.array(([2], [-1])), -45: np.array(([2], [1]))}
-curve_displacement_dx = {45: np.array(([1], [-2])), -45: np.array(([1], [2]))}
-rotate_array_dict = {90: np.array(([0, 1], [-1, 0])), -90: np.array(([0, -1], [1, 0])),
-                     45: np.array(([0, math.sqrt(0.5)], [-1*math.sqrt(0.5), 0])), -45: np.array(([0, -1*math.sqrt(0.5)], [math.sqrt(0.5), 0]))}
-rotate_instructions = {0: [], 45: [45], 90: [90], 135: [90, 45], 180: [90, 90], 225: [90, 90, 45], 270: [90, 90, 90], 315: [90, 90, 90, 45]}
+from LineGenerators import LG1_LondonNormalHelper as lnh
+from LineGenerators import LG1_Config as config
 
 
 class LG1_LondonNormal:
@@ -30,20 +13,79 @@ class LG1_LondonNormal:
         self.map = map
         self.xs = xs
         self.ys = ys
+        self.trend_direction = None
+        self.termination_score = config.termination_score
+        self.buffer = []
 
-    def top_level_generate(self):
+    # Top-level generate
+    def generate(self):
         current = self.first_segment()
-        #current = self.continuing_segments(current)
+        self.continuing_segments(current)
+        for thing in self.buffer:
+            if thing[1] != '360':
+                self.render_list.append(thing[1])
         #self.termination(current)
+        return self.render_list
 
     def first_segment(self):
-        current = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
-        while lnh.check_start_loc(starting_location=current, map_network=self.map)
+        # Placing and checking the origin point
+        current, zone = self.origin()
 
-    def continuing_segments(self):
-        # Iterative method
+        # Choosing and checking the first segment
+        posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current, zone=zone)
+        next_posdir, next_segment, distance = lnh.create_straight(xs=self.xs, ys=self.ys, posdir=posdir, force_distance=None)
+        while lnh.check_start_dir(next_posdir=next_posdir, next_segment=next_segment, map_network=self.map) is False:
+            current, zone = self.origin()
+            posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current, zone=zone)
+            next_posdir, next_segment, distance = lnh.create_straight(xs=self.xs, ys=self.ys, posdir=posdir, force_distance=None)
+
+        # Add to list
+        self.render_list.append(next_segment)
+        return next_posdir
+
+    def origin(self):
+        current, zone = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
+        while lnh.check_start_loc(starting_location=current, map_network=self.map) is False:
+            current, zone = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
+        return current, zone
+
+    def continuing_segments(self, current_posdir):
+        while self.termination_score > 0:
+            curve, next_posdir, segment, next2_posdir = self.next_segment(current_posdir)
+            if curve is None:
+                self.buffer.append([current_posdir, '360', next_posdir])
+            else:
+                self.buffer.append([current_posdir, curve, next_posdir])
+            self.buffer.append([next_posdir, segment, next2_posdir])
+
+
+            current_posdir = next2_posdir
+
+            self.termination_score -= 250
+            checkr = self.check_next()
+            if checkr is not None:
+                current_posdir = checkr
+
+
+    def check_next(self):
+        # Check 1: Is the end of the most recent segment + curve radius outside the map:
+        if lnh.is_inside_boundaries(xs=self.xs, ys=self.ys, buffer1=self.buffer[-2], buffer2=self.buffer[-1]) is not True:
+            trash = self.buffer.pop()
+            trash2 = self.buffer.pop()
+            return trash2[0]
+
+
+
+
+
+    def next_segment(self, current_posdir):
+        next_posdir, curve = lnh.pick_next_curve(posdir=current_posdir, trend=self.trend_direction, force_change=None)
+        next2_posdir, segment, distance = lnh.create_straight(xs=self.xs, ys=self.ys, posdir=next_posdir, force_distance=None)
+        return curve, next_posdir, segment, next2_posdir
 
     def termination(self):
+        pass
+
 
 
 
