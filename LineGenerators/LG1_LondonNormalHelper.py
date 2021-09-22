@@ -108,13 +108,13 @@ def pick_next_curve(posdir, trend, force_change):
         if trend != posdir.dirc:
             change_s = np.random.choice(["Correct", "Random", "Continue"], p=config.P_chance_to_correct_random_continue)
             if change_s == "Correct":
-                if abs(trend - posdir.dirc) > 45:
+                if angle_difference_abs(posdir.dirc, trend) > 45:
                     change_by = np.random.choice([45, 90], p=config.P_change_to_trend_by_amount_45_90)
                 else:
                     change_by = 45
-                if trend > posdir.dirc:
+                if angle_difference_abs(posdir.dirc, trend) > 0:
                     next_posdir, curve = add_curve(posdir, posdir.dirc, change_by)
-                elif trend < posdir.dirc:
+                elif angle_difference_abs(posdir.dirc, trend) < 0:
                     next_posdir, curve = add_curve(posdir, posdir.dirc, -1 * change_by)
             elif change_s == "Random":
                 change = np.random.choice([-90, -45, 45, 90], p=config.P_curve_n90_n45_45_90_changes)
@@ -242,3 +242,24 @@ def orientation_change(base_dir, change_dir):
     elif direction < 0:
         direction += 360
     return direction
+
+def angle_difference_abs(ang1, ang2):
+    # Without 360
+    angc1 = ang2 - ang1
+    if abs(angc1) > 180:
+        angc1 = -1 * (360 - angc1)
+
+    # With 360
+    if ang1 == 0:
+        ang1 = 360
+    if ang2 == 0:
+        ang2 = 360
+    angc2 = ang2 - ang1
+    if abs(angc2) > 180:
+        angc2 = -1 * (360 - angc2)
+
+    if abs(angc2) > abs(angc1):
+        return angc1
+    else:
+        return angc2
+

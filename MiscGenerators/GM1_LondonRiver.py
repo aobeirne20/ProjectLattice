@@ -37,7 +37,7 @@ class GM1_LondonRiver:
             hold_location = current_location
             current_location = self.joint_ftc(current_location, current_dir)
             current_location = self.step_climb(current_location, current_dir)
-            if current_location[1] >= self.ys*7/8 or current_location[1] <= self.ys/2:
+            if current_location[1] >= self.ys*7/8 or current_location[1] <= self.ys/3*2:
                 trash = self.render_list.pop()
                 trash = self.render_list.pop()
                 current_location = hold_location
