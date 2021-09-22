@@ -26,8 +26,11 @@ class Arc90:
         self.loc1 = loc1
         self.loc2 = loc2
         self.orientation = orientation
+        self.center = None
         self.sandwich_R = None
         self.sandwich_L = None
+        self.curve_scale = curve_scale
+        self.chirality = chirality
 
         if chirality == 'R':
             if orientation == 0:
@@ -55,6 +58,7 @@ class Arc90:
 
         self.upper_l = (center[0] - curve_scale, center[1] - curve_scale)
         self.bottom_r = (center[0] + curve_scale, center[1] + curve_scale)
+        self.center = center
 
     def render(self, pen, draw):
         draw.arc((self.upper_l[0], self.upper_l[1], self.bottom_r[0], self.bottom_r[1]),
@@ -67,12 +71,14 @@ class Arc45:
         self.loc2 = loc2
         self.orientation = orientation
         self.chirality = chirality
+        self.center = None
         self.sandwich_R = None
         self.sandwich_L = None
 
         self.intro_seg = None
         self.outro_seg = None
         self.arc = None
+        self.curve_scale = curve_scale
 
         strt = (2 - 2*math.sqrt(0.5)) * curve_scale
         diag = math.sqrt(0.5) * curve_scale
@@ -195,6 +201,7 @@ class Arc45:
 
         self.upper_l = (center[0] - curve_scale, center[1] - curve_scale)
         self.bottom_r = (center[0] + curve_scale, center[1] + curve_scale)
+        self.center = center
 
     def render(self, pen, draw):
         draw.arc((self.upper_l[0], self.upper_l[1], self.bottom_r[0], self.bottom_r[1]),

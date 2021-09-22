@@ -1,7 +1,7 @@
 
 class StyleDatabase:
-    aa_scale = 4
-    map_scale = 0.5
+    aa_scale = 1
+    map_scale = 1
     t_scale = aa_scale * map_scale
 
     map_style_guide = {

@@ -1,4 +1,4 @@
-from MiscRenderers import RM1_LondonRiver
+from MiscRenderers import RM1_LondonRiver, RM2_LondonStations
 from LineRenderers import LR1_LondonNormal
 
 import style_data
@@ -18,6 +18,7 @@ class R1_London:
 
         self.render_primary_features()
         self.render_lines()
+        self.render_loci()
 
     def render_primary_features(self):
         for feature in self.map.primary_feature_list:
@@ -29,6 +30,10 @@ class R1_London:
         for line in self.map.line_list:
             rm = LR1_LondonNormal.LR1_LondonNormal(self.xs, self.ys, line.render_list, style=line.style)
             self.render_slices.append(rm.render())
+
+    def render_loci(self):
+        rm = RM2_LondonStations.RM2_LondonStations(self.xs, self.ys, self.map.locus_list)
+        self.render_slices = self.render_slices + rm.render()
 
     def give_render(self):
         for r_slice in self.render_slices:

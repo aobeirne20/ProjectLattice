@@ -49,34 +49,33 @@ class PositionAndDirection:
         self.dirc = direction
         return self.dirc
 
+    def distance_between(self, posdir2):
+        loc1 = np.asarray([self.x, self.y])
+        loc2 = np.asarray([posdir2.x, posdir2.y])
+        return np.linalg.norm(loc1-loc2)
+
 
 def pick_start_loc(xs, ys):
-    x = r.randint(int(4.5/10 * xs), int(6.5/10 * xs))
-    y = r.randint(int(4/10 * ys), int(6/10 * ys))
+    x = r.randint(int(config.x_box[0] * xs), int(config.x_box[1] * xs))
+    y = r.randint(int(config.y_box[0] * ys), int(config.y_box[1] * ys))
     return PositionAndDirection(x, y, None)
 
 
-def check_start_loc(starting_location, map_network):
-    if map_network.node_check(starting_location)["distance"] < config.starting_exclusion_scale:
-        return False
-    else:
-        return True
-
-
-def pick_start_dir(xs, ys, starting_location):
+def pick_start_dir(starting_location):
     trend = np.random.choice([0, 45, 90, 135, 180, 225, 270, 315])
-    angle = trend
-    starting_location.dirc = trend
+    change = np.random.choice([-45, 0, 45], p=config.P_chance_to_start_n45_on_45)
+    starting_location.dirc = orientation_change(trend, change)
     return starting_location, trend
 
 
-def check_start_dir(next_posdir, next_segment, map_network):
-    if map_network.seg_parallel_check(next_segment)["distance"] < config.exclusion_scale:
-        return False
-    if map_network.node_check(next_posdir)["distance"] < config.exclusion_scale:
-        return False
-    else:
-        return True
+def potential_start_stations(xs, ys, map_network):
+    all_locs = []
+    for station in map_network.locus_list:
+        if station['name'] == 'Interchange':
+            test_postdir = PositionAndDirection(x=station['location'][0], y=station['location'][1], dirc=None)
+            if is_inside_starting_boundaries(xs, ys, test_postdir):
+                all_locs.append(test_postdir)
+    return all_locs
 
 
 def create_straight(xs, ys, posdir, force_distance):
@@ -99,18 +98,19 @@ def pick_next_curve(posdir, trend, force_change):
             change_s = np.random.choice(["Correct", "Random", "Continue"], p=config.P_chance_to_correct_random_continue)
             if change_s == "Correct":
                 if angle_difference_abs(posdir.dirc, trend) > 45:
-                    change_by = np.random.choice([45, 90], p=config.P_change_to_trend_by_amount_45_90)
+                    change = np.random.choice([45, 90], p=config.P_change_to_trend_by_amount_45_90)
                 else:
-                    change_by = 45
+                    change = 45
                 if angle_difference_abs(posdir.dirc, trend) > 0:
-                    next_posdir, curve = add_curve(posdir, posdir.dirc, change_by)
+                    next_posdir, curve = add_curve(posdir, posdir.dirc, change)
                 elif angle_difference_abs(posdir.dirc, trend) < 0:
-                    next_posdir, curve = add_curve(posdir, posdir.dirc, -1 * change_by)
+                    next_posdir, curve = add_curve(posdir, posdir.dirc, -1 * change)
             elif change_s == "Random":
                 change = np.random.choice([-90, -45, 45, 90], p=config.P_curve_n90_n45_45_90_changes)
                 next_posdir, curve = add_curve(posdir, posdir.dirc, change)
             elif change_s == "Continue":
                 next_posdir = posdir
+                change = None
                 curve = None
 
         # When the line is ON TREND
@@ -121,11 +121,49 @@ def pick_next_curve(posdir, trend, force_change):
                 next_posdir, curve = add_curve(posdir, posdir.dirc, change)
             elif change_s == "Continue":
                 next_posdir = posdir
+                change = None
                 curve = None
     else:
         next_posdir, curve = add_curve(posdir, posdir.dirc, force_change)
-    return next_posdir, curve
+        change = force_change
+    return next_posdir, curve, change
 
+
+def check_start_loc(starting_location, map_network):
+    if map_network.node_check(starting_location)["distance"] < config.starting_exclusion_scale:
+        return False
+    else:
+        return True
+
+
+def check_start_dir(next_posdir, next_segment, map_network):
+    if map_network.seg_parallel_check(next_segment)["distance"] < config.exclusion_scale:
+        return False
+    if map_network.node_check(next_posdir)["distance"] < config.exclusion_scale:
+        return False
+    else:
+        return True
+
+
+def check_for_interchange_new_straight(next_segment, map_network):
+    return map_network.seg_crossing_check(next_segment)
+
+
+def check_for_interchange_new_curve(next_curve, map_network):
+    return map_network.seg_crossing_check(next_curve)
+
+
+def check_for_wrong_sandwich(next_segment, map_network):
+    if map_network.seg_parallel_check(next_segment)["distance"] < config.parallel_exclusion_scale:
+        pass
+
+def check_for_interchange_dis(location, map_network):
+    if map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale/50:
+        return True, False
+    elif map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale:
+        return False, False
+    else:
+        return True, True
 
 def check_next_curve(xs, ys, next_posdir, next_curve, map_network):
     if next_posdir.x > (xs * config.boundaries[1]) or next_posdir.x < (xs * config.boundaries[0]) or \
@@ -155,15 +193,23 @@ def check_next_segment(xs, ys, next_posdir, next_segment, map_network):
     return None, None
 
 
-def is_inside_boundaries(xs, ys, buffer1, buffer2):
-    if buffer2[2].x + config.curve_scale*3 > (xs * config.boundaries[1]) or \
-            buffer2[2].x - config.curve_scale * 3 < (xs * config.boundaries[0]) or \
-            buffer2[2].y + config.curve_scale * 3 > (ys * config.boundaries[1]) or \
-            buffer2[2].y - config.curve_scale * 3 < (ys * config.boundaries[0]):
+def is_inside_boundaries(xs, ys, postdir):
+    if postdir.x + config.curve_scale > xs * config.boundaries[1] or \
+        postdir.x - config.curve_scale < xs * config.boundaries[0] or \
+        postdir.y + config.curve_scale > ys * config.boundaries[1] or \
+        postdir.y - config.curve_scale < ys * config.boundaries[0]:
         return False
     else:
         return True
 
+def is_inside_starting_boundaries(xs, ys, postdir):
+    if postdir.x + config.curve_scale > xs * config.x_box[1] or \
+        postdir.x - config.curve_scale < xs * config.x_box[0] or \
+        postdir.y + config.curve_scale > ys * config.y_box[1] or \
+        postdir.y - config.curve_scale < ys * config.y_box[0]:
+        return False
+    else:
+        return True
 
 
 
@@ -186,7 +232,7 @@ def add_curve_to_90(curve_location, current_direction, change):
         typ_curve_displacement = np.matmul(rotate_array_dict[instruction], typ_curve_displacement)
     actual_curve_displacement = typ_curve_displacement
     loc2 = (
-    curve_location[0] + actual_curve_displacement[0] * config.curve_scale, curve_location[1] + actual_curve_displacement[1] * config.curve_scale)
+    curve_location[0] + actual_curve_displacement[0][0] * config.curve_scale, curve_location[1] + actual_curve_displacement[1][0] * config.curve_scale)
 
     if change == 90:
         curve = ge.Arc90(loc1=curve_location, loc2=loc2, orientation=current_direction, chirality='L', curve_scale=config.curve_scale)
@@ -213,7 +259,7 @@ def add_curve_to_45(curve_location, current_direction, change):
         typ_curve_displacement = np.matmul(rotate_array_dict[instruction], typ_curve_displacement)
     actual_curve_displacement = typ_curve_displacement
     loc2 = (
-    curve_location[0] + actual_curve_displacement[0] * config.curve_scale, curve_location[1] + actual_curve_displacement[1] * config.curve_scale)
+    curve_location[0] + actual_curve_displacement[0][0] * config.curve_scale, curve_location[1] + actual_curve_displacement[1][0] * config.curve_scale)
 
     if change == 45:
         curve = ge.Arc45(loc1=curve_location, loc2=loc2, orientation=orientation_change(current_direction, -45), chirality='Ld',

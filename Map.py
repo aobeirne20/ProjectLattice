@@ -46,8 +46,20 @@ class Map:
                 for seg1 in thing.render_list:
                     cross_loc = MC.location_of_intersection_of_two_segs(seg1, seg2)
                     if cross_loc is not None:
-                        crossing_dict.append({"location": cross_loc, "object": thing.name})
+                        crossing_dict.append({"location": cross_loc, "object": thing.name, "geometry": type(seg1).__name__})
         return crossing_dict
+
+    def interchange_dist_check(self, locx, locy):
+        closest_d = np.maximum(self.size[0], self.size[1])
+        for thing in self.locus_list:
+            x1 = thing["location"][0]
+            y1 = thing["location"][1]
+            dis = np.linalg.norm(np.asarray([x1, y1])-np.asarray([locx, locy]))
+            if dis < closest_d:
+                closest_d = dis
+        return closest_d
+
+
 
     # Node checks the new (next) node, for potential sandwich section segments
     def seg_node_check(self, seg2):
