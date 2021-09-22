@@ -51,19 +51,9 @@ class PositionAndDirection:
 
 
 def pick_start_loc(xs, ys):
-    outer_rect_s = box(config.outer_rect[0][0] * xs, config.outer_rect[1][0] * ys, config.outer_rect[0][1] * xs, config.outer_rect[1][1] * ys)
-    inner_rect_s = box(config.inner_rect[0][0] * xs, config.inner_rect[1][0] * ys, config.inner_rect[0][1] * xs, config.inner_rect[1][1] * ys)
-    zone = np.random.choice(starting_zones, p=config.P_starting_zones) - 1
-    zone_rect_s = box(config.zone_rects[zone][0][0] * xs, config.zone_rects[zone][0][1] * ys, config.zone_rects[zone][1][0] * xs, config.zone_rects[zone][1][1] * ys)
-
-    valid = False
-    while valid is not True:
-        x = r.randint(0, xs)
-        y = r.randint(0, ys)
-        point = Point(x, y)
-        if outer_rect_s.contains(point) is True and inner_rect_s.contains(point) is False and zone_rect_s.contains(point) is True:
-            break
-    return PositionAndDirection(x, y, None), zone
+    x = r.randint(int(4.5/10 * xs), int(6.5/10 * xs))
+    y = r.randint(int(4/10 * ys), int(6/10 * ys))
+    return PositionAndDirection(x, y, None)
 
 
 def check_start_loc(starting_location, map_network):
@@ -73,10 +63,10 @@ def check_start_loc(starting_location, map_network):
         return True
 
 
-def pick_start_dir(xs, ys, starting_location, zone):
-    trend = np.random.choice(starting_zone_angles[zone], p=config.P_trend_chance[zone])
-    angle = np.random.choice(starting_zone_angles[zone], p=config.P_angle_chance[zone])
-    starting_location.dirc = angle
+def pick_start_dir(xs, ys, starting_location):
+    trend = np.random.choice([0, 45, 90, 135, 180, 225, 270, 315])
+    angle = trend
+    starting_location.dirc = trend
     return starting_location, trend
 
 

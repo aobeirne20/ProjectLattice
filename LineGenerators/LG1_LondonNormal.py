@@ -24,30 +24,34 @@ class LG1_LondonNormal:
         for thing in self.buffer:
             if thing[1] != '360':
                 self.render_list.append(thing[1])
+        self.reverse()
+        for thing in self.buffer:
+            if thing[1] != '360':
+                self.render_list.append(thing[1])
         #self.termination(current)
         return self.render_list
 
     def first_segment(self):
         # Placing and checking the origin point
-        current, zone = self.origin()
+        current = self.origin()
 
         # Choosing and checking the first segment
-        posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current, zone=zone)
+        posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current)
         next_posdir, next_segment, distance = lnh.create_straight(xs=self.xs, ys=self.ys, posdir=posdir, force_distance=None)
         while lnh.check_start_dir(next_posdir=next_posdir, next_segment=next_segment, map_network=self.map) is False:
-            current, zone = self.origin()
-            posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current, zone=zone)
+            current = self.origin()
+            posdir, self.trend_direction = lnh.pick_start_dir(xs=self.xs, ys=self.ys, starting_location=current)
             next_posdir, next_segment, distance = lnh.create_straight(xs=self.xs, ys=self.ys, posdir=posdir, force_distance=None)
 
         # Add to list
-        self.render_list.append(next_segment)
+        #self.render_list.append(next_segment)
         return next_posdir
 
     def origin(self):
-        current, zone = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
+        current = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
         while lnh.check_start_loc(starting_location=current, map_network=self.map) is False:
-            current, zone = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
-        return current, zone
+            current = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
+        return current
 
     def continuing_segments(self, current_posdir):
         while self.termination_score > 0:
@@ -61,7 +65,7 @@ class LG1_LondonNormal:
 
             current_posdir = next2_posdir
 
-            self.termination_score -= 250
+            self.termination_score -= 1000
             checkr = self.check_next()
             if checkr is not None:
                 current_posdir = checkr
@@ -72,11 +76,19 @@ class LG1_LondonNormal:
         if lnh.is_inside_boundaries(xs=self.xs, ys=self.ys, buffer1=self.buffer[-2], buffer2=self.buffer[-1]) is not True:
             trash = self.buffer.pop()
             trash2 = self.buffer.pop()
+            self.termination_score = 0
             return trash2[0]
 
 
 
-
+    def reverse(self):
+        if self.trend_direction >= 180:
+            self.trend_direction -= 180
+        else:
+            self.trend_direction += 180
+        self.termination_score = 15000
+        self.buffer[0][0].dirc = self.trend_direction
+        self.continuing_segments(self.buffer[0][0])
 
     def next_segment(self, current_posdir):
         next_posdir, curve = lnh.pick_next_curve(posdir=current_posdir, trend=self.trend_direction, force_change=None)
