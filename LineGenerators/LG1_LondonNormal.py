@@ -9,32 +9,42 @@ from LineGenerators import LG1_Config as config
 
 class LG1_LondonNormal:
     def __init__(self, xs, ys, map):
-        self.render_list = []
         self.map = map
         self.xs = xs
         self.ys = ys
 
-        self.buffer = []
-        self.station_buffer = []
-        self.P_branch = config.P_chance_of_branch_reverse_continue_choices[np.random.choice([0, 1, 2], p=config.P_branch_type_choice)]
-        self.just_reversed = False
+    def outer_generate(self):
+        # ORIGIN
+        path_buffer = []
+        origin_posdir, trend, flip_posdir, flip_trend = self.gen_origin()
+        print(trend)
 
-    def generate(self):
-        current_postdir, trend = self.origin()
-        self.generate_branch(current_postdir, trend, config.termination_score)
-        current_postdir, trend = self.reverse(trend)
-        self.generate_branch(current_postdir, trend, config.termination_score)
-        #self.terminate()
-        for thing in self.buffer:
-            if isinstance(thing[1], str) is not True:
-                self.render_list.append(thing[1])
-        return self.render_list
+        # FIRST PRIME BRANCH
+        path = [PathElement(flip_posdir, 'origin', origin_posdir)]
+        child_error, path = self.r_gen_package(path=path, trend=trend)
+        if child_error is None:
+            path_buffer += path
+        else:
+            return self.outer_generate()
 
-    def origin(self):
-        # Choose between exisiting interchange, or new location
+        # SECOND PRIME BRANCH
+        path = [PathElement(origin_posdir, 'origin', flip_posdir)]
+        child_error, path = self.r_gen_package(path=path, trend=flip_trend)
+        if child_error is None:
+            path_buffer += path
+        else:
+            return self.outer_generate()
+
+        render_list = unload_buffer(path_buffer)
+        return render_list
+
+    def gen_origin(self):
+        # Calculate chance to start on an interchange
         potential_start_interchanges = lnh.potential_start_stations(xs=self.xs, ys=self.ys, map_network=self.map)
-        chance = math.sqrt(len(potential_start_interchanges)*0.5)/8
-        p_chance_to_start_on_int = [chance, 1-chance]
+        chance = math.sqrt(len(potential_start_interchanges) * 0.5) / 8
+        p_chance_to_start_on_int = [chance, 1 - chance]
+
+        # CHOICE: True, start on interchange; False, start on random location
         if np.random.choice([True, False], p=p_chance_to_start_on_int) and potential_start_interchanges:
             origin_posdir = np.random.choice(potential_start_interchanges)
         else:
@@ -42,148 +52,71 @@ class LG1_LondonNormal:
             while lnh.check_start_loc(starting_location=origin_posdir, map_network=self.map) is False:
                 origin_posdir = lnh.pick_start_loc(xs=self.xs, ys=self.ys)
 
-
-
-
-
-        # Origin direction
+        # Get origin direction and trend
         origin_posdir, trend = lnh.pick_start_dir(origin_posdir)
-        # Flip for future reverse
-        flip_dir = origin_posdir.dirc + 180
-        if flip_dir >= 360:
-            flip_dir -= 360
-        # Append special origin to buffer
-        self.buffer.append([lnh.PositionAndDirection(origin_posdir.x, origin_posdir.y, flip_dir), "Origin", origin_posdir])
-        return origin_posdir, trend
 
-    def generate_branch(self, current_postdir, trend, termination_score):
-        force_change = None
-        force_distance = None
-        no_handle = False
-        problem = False
-        no_curve = False
+        # Prepare flip
+        flip_posdir = lnh.PositionAndDirection(origin_posdir.x, origin_posdir.y, flip_angle(origin_posdir.dirc))
+        flip_trend = flip_angle(trend)
 
-        termination_check = 5
-        while termination_score > 0:
-            # Make the segment
-            if no_curve is False:
-                next_posdir, curve, change = lnh.pick_next_curve(current_postdir, trend, force_change=force_change)
-            if no_curve is True:
-                next_posdir = current_postdir
-            next2_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, next_posdir, force_distance=force_distance)
-            force_change = None
-            force_distance = None
-            no_curve = False
+        # Return to function
+        return origin_posdir, trend, flip_posdir, flip_trend
 
-            # Check 1: End of Line Termination
-            if lnh.is_inside_boundaries(xs=self.xs, ys=self.ys, postdir=next2_posdir) is False and termination_check > 0:
-                termination_check -= 1
-                continue
-            if termination_check <= 0:
-                break
+    def r_gen_package(self, path, trend):
+        # PACKAGE GENERATION
+        current_posdir = path[-1].next_posdir
+        middle_posdir, next_curve, change = lnh.pick_next_curve(current_posdir, trend, force_change=None)
+        end_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, middle_posdir, force_distance=None)
 
-            # Check 2: Incorrect sandwich check:
+        # LINE TERMINATION
+        if lnh.is_inside_boundaries(xs=self.xs, ys=self.ys, postdir=end_posdir) is False:
+            return None, path
 
-            # Check 3: Interchange Check
-            crossings_from_seg = lnh.check_for_interchange_new_straight(next_segment, self.map)
-            crossings_from_curve = None
-            if curve is not None:
-                crossings_from_curve = lnh.check_for_interchange_new_curve(curve, self.map)
-
-
-            for crossing in crossings_from_seg:
-                if crossing['object'] != 'LondonRiver':
-                    if np.random.choice([True, False], p=config.P_seg_onto_seg):
-                        if crossing['geometry'] == 'Arc45' or crossing['geometry'] == 'Arc90':
-                            if np.random.choice([True, False], p=config.P_curve_onto_seg):
-                                is_valid, do_add = lnh.check_for_interchange_dis(crossing['location'], self.map)
-                                if is_valid and do_add:
-                                    self.map.locus_list.append({"name": "Interchange", "location": crossing['location']})
-
-                                    # Chance to terminate at interchange station
-                                    if termination_score < config.low_termination_score * 2:
-                                        force_change = change
-                                        interchange_location = lnh.PositionAndDirection(x=crossing['location'][0], y=crossing['location'][1],
-                                                                                        dirc=None)
-                                        force_distance = interchange_location.distance_between(next_posdir)
-                                        next2_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, next_posdir,
-                                                                                                        force_distance=force_distance)
-
-                                        termination_score = 0
-                                        no_handle = True
-                                elif is_valid is False:
-                                    problem = True
-                        else:
-                            is_valid, do_add = lnh.check_for_interchange_dis(crossing['location'], self.map)
-                            if is_valid and do_add:
-                                self.map.locus_list.append({"name": "Interchange", "location": crossing['location']})
-
-                                # Chance to terminate at interchange station
-                                if termination_score < config.low_termination_score * 2:
-                                    force_change = change
-                                    interchange_location = lnh.PositionAndDirection(x=crossing['location'][0], y=crossing['location'][1], dirc=None)
-                                    force_distance = interchange_location.distance_between(next_posdir)
-                                    next2_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, next_posdir,
-                                                                                                    force_distance=force_distance)
-
-                                    termination_score = 0
-                                    no_handle = True
-                            elif is_valid is False:
-                                problem = True
-
-            if crossings_from_curve is not None:
-                for crossing in crossings_from_curve:
-                    if crossing['object'] != 'LondonRiver':
-                        if crossing['geometry'] != 'Arc45' or crossing['geometry'] != 'Arc90':
-                            self.map.locus_list.append({"name": "Interchange", "location": crossing['location']})
+        else:
+            if next_curve is None:
+                next_curve = 'straight'
+            path_addenum = [PathElement(current_posdir, next_curve, middle_posdir), PathElement(middle_posdir, next_segment, end_posdir)]
+            child_error, path = self.r_gen_package(path + path_addenum, trend)
+            if child_error is None:
+                return None, path
+            else:
+                # handle child error
+                pass
 
 
 
 
 
 
-            # Append
-            if problem is False:
-                self.just_reversed = False
-                termination_score -= next_distance * r.randint(config.tscore[0], config.tscore[1])
-                if curve is None:
-                    self.buffer.append([current_postdir, 'Straight', next_posdir])
-                else:
-                    self.buffer.append([current_postdir, curve, next_posdir])
-                self.buffer.append([next_posdir, next_segment, next2_posdir])
-                current_postdir = next2_posdir
-            elif problem is True:
-                problem = False
 
+def flip_angle(angle):
+    new_angle = angle + 180
+    if new_angle >= 360:
+        new_angle -= 360
+    return new_angle
 
-
-            # Sub-branches
-            branch_beh = np.random.choice(["Branch", "Reverse", "Continue"], p=self.P_branch)
-            if branch_beh == "Branch":
-                branch_code = np.random.choice(config.branch_codes, p=config.P_branch_trend_change)
-                branch_trend = lnh.orientation_change(trend, branch_code["trend_change"])
-                branch_angle_change = np.random.choice(branch_code["angle_changes"], p=branch_code["angle_changes_P"])
-                branch_postdir, curve = lnh.add_curve(posdir=current_postdir, current_direction=current_postdir.dirc, change=branch_angle_change)
-                self.buffer.append([current_postdir, 'Branch', branch_postdir])
-                self.buffer.append([current_postdir, curve, branch_postdir])
-                self.generate_branch(branch_postdir, branch_trend, r.randint(int(config.termination_score/config.branch_t_f), config.termination_score))
-
-        # Make the end of line handle:
-        if no_handle is False:
-            self.buffer.append
+def unload_buffer(path_buffer):
+    render_list = []
+    for path_element in path_buffer:
+        if isinstance(path_element.part, str):
+            pass
+        else:
+            render_list.append(path_element.part)
+    return render_list
 
 
 
 
+class ChildErrorPackage:
+    def __init__(self):
+        pass
 
 
-    def reverse(self, trend):
-        trend = trend + 180
-        if trend >= 360:
-            trend -= 360
-        self.just_reversed = True
-        return self.buffer[0][0], trend
-
+class PathElement:
+    def __init__(self, previous_posdir, part, next_posdir):
+        self.previous_posdir = previous_posdir
+        self.part = part
+        self.next_posdir = next_posdir
 
 
 

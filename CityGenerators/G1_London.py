@@ -36,7 +36,7 @@ class G1_London:
             elif self.SD[line]['type'] == "normal":
                 gen = LG1_LondonNormal.LG1_LondonNormal(self.xs, self.ys, self.map)
                 print(line)
-                self.map.line_list.append(Map.Line(name=line, style=self.SD[line], render_list=gen.generate()))
+                self.map.line_list.append(Map.Line(name=line, style=self.SD[line], render_list=gen.outer_generate()))
 
     def give_map(self):
         return self.map
