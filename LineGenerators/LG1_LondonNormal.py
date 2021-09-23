@@ -15,7 +15,9 @@ class LG1_LondonNormal:
         self.ys = ys
 
         self.buffer = []
+        self.station_buffer = []
         self.P_branch = config.P_chance_of_branch_reverse_continue_choices[np.random.choice([0, 1, 2], p=config.P_branch_type_choice)]
+        self.just_reversed = False
 
     def generate(self):
         current_postdir, trend = self.origin()
@@ -142,6 +144,7 @@ class LG1_LondonNormal:
 
             # Append
             if problem is False:
+                self.just_reversed = False
                 termination_score -= next_distance * r.randint(config.tscore[0], config.tscore[1])
                 if curve is None:
                     self.buffer.append([current_postdir, 'Straight', next_posdir])
@@ -151,21 +154,6 @@ class LG1_LondonNormal:
                 current_postdir = next2_posdir
             elif problem is True:
                 problem = False
-                # Case 1: Previous segment. Easiest, pop twice from buffer then return.
-                if len(self.buffer) > 2:
-                    self.buffer.pop()
-                    return_to = self.buffer.pop()
-                    current_postdir =
-
-
-                if bool(self.buffer) is False:
-                    break
-                previous = self.buffer.pop()
-                previous_postdir = previous[0]
-                next2_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, previous_postdir,
-                                                                                force_distance=None)
-                no_curve = True
-                force_distance = next_distance
 
 
 
@@ -176,6 +164,7 @@ class LG1_LondonNormal:
                 branch_trend = lnh.orientation_change(trend, branch_code["trend_change"])
                 branch_angle_change = np.random.choice(branch_code["angle_changes"], p=branch_code["angle_changes_P"])
                 branch_postdir, curve = lnh.add_curve(posdir=current_postdir, current_direction=current_postdir.dirc, change=branch_angle_change)
+                self.buffer.append([current_postdir, 'Branch', branch_postdir])
                 self.buffer.append([current_postdir, curve, branch_postdir])
                 self.generate_branch(branch_postdir, branch_trend, r.randint(int(config.termination_score/config.branch_t_f), config.termination_score))
 
@@ -192,6 +181,7 @@ class LG1_LondonNormal:
         trend = trend + 180
         if trend >= 360:
             trend -= 360
+        self.just_reversed = True
         return self.buffer[0][0], trend
 
 

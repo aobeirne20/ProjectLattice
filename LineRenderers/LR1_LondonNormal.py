@@ -17,7 +17,7 @@ class LR1_LondonNormal:
         img_slice = PIL.Image.new('RGBA', (self.xs, self.ys), color=(0, 0, 0, 0))
         if self.style["style"] == "double":
             pens = [aggdraw.Pen(self.style["color"], 18*sd.StyleDatabase.t_scale),
-                    aggdraw.Pen((255, 255, 255, 255), 10*sd.StyleDatabase.t_scale)]
+                    aggdraw.Pen((255, 255, 255, 255), 8*sd.StyleDatabase.t_scale)]
         if self.style["style"] == "single":
             pens = [aggdraw.Pen(self.style["color"], 18*sd.StyleDatabase.t_scale)]
         draw = aggdraw.Draw(img_slice)

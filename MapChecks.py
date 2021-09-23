@@ -45,7 +45,7 @@ def location_of_intersection_of_two_segs(seg1, seg2):
                 elif seg.chirality == 'L':
                     start_angle = -1*(seg.orientation - 90)
                     end_angle = -1*seg.orientation
-                numsegments = 10
+                numsegments = 100
 
                 theta = np.radians(np.linspace(start_angle, end_angle, numsegments))
                 x = centerx + radius * np.cos(theta)
@@ -72,7 +72,7 @@ def location_of_intersection_of_two_segs(seg1, seg2):
                 elif seg.chirality == 'Ld':
                     start_angle = -1*(seg.orientation)
                     end_angle = -1*(seg.orientation - 45)
-                numsegments = 10
+                numsegments = 100
 
                 theta = np.radians(np.linspace(start_angle, end_angle, numsegments))
                 x = centerx + radius * np.cos(theta)
