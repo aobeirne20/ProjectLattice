@@ -78,12 +78,16 @@ def potential_start_stations(xs, ys, map_network):
     return all_locs
 
 
-def create_straight(xs, ys, posdir, force_distance):
+def create_straight(xs, ys, posdir, force_distance, mod_distance_f):
     if force_distance is None:
         next_distance = r.randint(int(xs / config.line_length_size_divisors[0]),
                                   int(ys / config.line_length_size_divisors[1]))
     else:
         next_distance = force_distance
+    if mod_distance_f is None:
+        pass
+    else:
+        next_distance = next_distance * mod_distance_f
     next_vector = (int(next_distance * straight_unit_vectors[posdir.dirc][0]),
                    int(next_distance * straight_unit_vectors[posdir.dirc][1]))
     next_posdir = PositionAndDirection(x=posdir.x + next_vector[0], y=posdir.y + next_vector[1], dirc=posdir.dirc)
@@ -97,14 +101,16 @@ def pick_next_curve(posdir, trend, force_change):
         if trend != posdir.dirc:
             change_s = np.random.choice(["Correct", "Random", "Continue"], p=config.P_chance_to_correct_random_continue)
             if change_s == "Correct":
-                if angle_difference_abs(posdir.dirc, trend) > 45:
+                angle_diff = angle_difference(posdir.dirc, trend)
+                if abs(angle_diff) > 45:
                     change = np.random.choice([45, 90], p=config.P_change_to_trend_by_amount_45_90)
                 else:
                     change = 45
-                if angle_difference_abs(posdir.dirc, trend) > 0:
+                if angle_diff > 0:
                     next_posdir, curve = add_curve(posdir, posdir.dirc, change)
-                elif angle_difference_abs(posdir.dirc, trend) < 0:
+                elif angle_diff < 0:
                     next_posdir, curve = add_curve(posdir, posdir.dirc, -1 * change)
+
             elif change_s == "Random":
                 change = np.random.choice([-90, -45, 45, 90], p=config.P_curve_n90_n45_45_90_changes)
                 next_posdir, curve = add_curve(posdir, posdir.dirc, change)
@@ -112,6 +118,7 @@ def pick_next_curve(posdir, trend, force_change):
                 next_posdir = posdir
                 change = None
                 curve = None
+
 
         # When the line is ON TREND
         elif trend == posdir.dirc:
@@ -123,6 +130,10 @@ def pick_next_curve(posdir, trend, force_change):
                 next_posdir = posdir
                 change = None
                 curve = None
+    elif force_change == 0:
+        next_posdir = posdir
+        change = None
+        curve = None
     else:
         next_posdir, curve = add_curve(posdir, posdir.dirc, force_change)
         change = force_change
@@ -153,9 +164,11 @@ def check_for_interchange_new_curve(next_curve, map_network):
     return map_network.seg_crossing_check(next_curve)
 
 
-def check_for_wrong_sandwich(next_segment, map_network):
+def is_wrong_sandwich(next_segment, map_network):
     if map_network.seg_parallel_check(next_segment)["distance"] < config.parallel_exclusion_scale:
-        pass
+        return True
+    else:
+        return False
 
 def check_for_interchange_dis(location, map_network):
     if map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale/50:
@@ -279,23 +292,26 @@ def orientation_change(base_dir, change_dir):
         direction += 360
     return direction
 
-def angle_difference_abs(ang1, ang2):
-    # Without 360
-    angc1 = ang2 - ang1
-    if abs(angc1) > 180:
-        angc1 = -1 * (360 - angc1)
-
-    # With 360
-    if ang1 == 0:
-        ang1 = 360
-    if ang2 == 0:
-        ang2 = 360
-    angc2 = ang2 - ang1
-    if abs(angc2) > 180:
-        angc2 = -1 * (360 - angc2)
-
-    if abs(angc2) > abs(angc1):
-        return angc1
+def angle_difference(from_ang, to_ang):
+    # in direction of increasing degrees
+    if to_ang < from_ang:
+        increasing_change = (to_ang + 360) - from_ang
     else:
-        return angc2
+        increasing_change = (to_ang) - from_ang
+
+     # in direction of decreasing degrees
+    if to_ang > from_ang:
+        decreasing_change = (from_ang + 360) - to_ang
+    else:
+        decreasing_change = (from_ang) - to_ang
+
+    if increasing_change == decreasing_change:
+        return np.random.choice([-180, 180])
+    elif increasing_change < decreasing_change:
+        return increasing_change
+    elif decreasing_change < increasing_change:
+        return -1 * decreasing_change
+    else:
+        return 0
+
 

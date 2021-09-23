@@ -21,6 +21,19 @@ def arc_builder(arc_type, loc1, loc2, orientation, chirality, curve_scale):
         return Arc90(loc1, loc2, orientation, chirality, curve_scale)
 
 
+class EndCap:
+    def __init__(self, loc1, loc2, orientation):
+        self.loc1 = loc1
+        self.loc2 = loc2
+        self.orientation = orientation
+        self.sandwich_R = None
+        self.sandwich_L = None
+
+    def render(self, pen, draw):
+        draw.line((self.loc1[0], self.loc1[1],
+                   self.loc2[0], self.loc2[1]), pen)
+
+
 class Arc90:
     def __init__(self, loc1, loc2, orientation, chirality, curve_scale):
         self.loc1 = loc1

@@ -35,6 +35,7 @@ class G1_London:
                 pass
             elif self.SD[line]['type'] == "normal":
                 gen = LG1_LondonNormal.LG1_LondonNormal(self.xs, self.ys, self.map)
+                print(f"-----------------------------------------------------------")
                 print(line)
                 self.map.line_list.append(Map.Line(name=line, style=self.SD[line], render_list=gen.outer_generate()))
 
