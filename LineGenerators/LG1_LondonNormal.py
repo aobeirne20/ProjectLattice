@@ -68,7 +68,7 @@ class LG1_LondonNormal:
         # PACKAGE GENERATION
         path_addenum, change, next_distance = make_package(path, trend, self.xs, self.ys, instruction)
 
-        # SANDWICH GENERATOR
+        # SANDWICH ERROR / GENERATOR
         is_gross_sandwich = lnh.is_wrong_sandwich(path_addenum[1].part, self.map)
         if is_gross_sandwich:
             child_error, path = self.r_gen_package(path + path_addenum, trend, None, termination_score - next_distance)
