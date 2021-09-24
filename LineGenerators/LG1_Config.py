@@ -12,7 +12,7 @@ starting_exclusion_scale = starting_exclusion_scale * sd.StyleDatabase.t_scale
 parallel_exclusion_scale = 60
 parallel_exclusion_scale = parallel_exclusion_scale * sd.StyleDatabase.t_scale
 
-interchange_exclusion_scale = 60
+interchange_exclusion_scale = 200
 interchange_exclusion_scale = interchange_exclusion_scale * sd.StyleDatabase.t_scale
 
 termination_score_min_max = [0.5, 1.5]
@@ -39,10 +39,10 @@ P_chance_to_start_at_interchange_or_new = [0.2, 0.8]
 P_branch_trend_change = [0.15, 0.3, 0.1, 0.3, 0.15]
 branch_t_f = 4
 
-P_seg_onto_seg = [0.95, 0.05]
-P_seg_onto_curve = [0.7, 0.3]
-P_curve_onto_seg = [0.2, 0.8]
-P_curve_onto_curve = [0, 1]
+P_seg_onto_seg = [1, 0]
+P_seg_onto_curve = [1, 0]
+P_curve_onto_seg = [1, 0]
+P_curve_onto_curve = [1, 0]
 
 tscore = [1, 6]
 

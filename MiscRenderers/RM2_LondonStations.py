@@ -15,6 +15,7 @@ class RM2_LondonStations:
         self.station_slices = []
 
     def render(self):
+        station_text_location_list = []
         for type_of_locus in ['Interchange']:
             if type_of_locus == 'Interchange':
                 img_slice = PIL.Image.new('RGBA', (self.xs, self.ys), color=(0, 0, 0, 0))
@@ -26,8 +27,9 @@ class RM2_LondonStations:
                         bounds = (locus['location'][0] + 17*sd.StyleDatabase.t_scale, locus['location'][1] + 17*sd.StyleDatabase.t_scale,
                                   locus['location'][0] - 17*sd.StyleDatabase.t_scale, locus['location'][1] - 17*sd.StyleDatabase.t_scale)
                         draw.ellipse(bounds, pen, brush)
+                        station_text_location_list.append({'location': locus['location'], 'type': locus['type']})
                 draw.flush()
                 self.station_slices.append(img_slice)
 
-        return self.station_slices
+        return self.station_slices, station_text_location_list
 

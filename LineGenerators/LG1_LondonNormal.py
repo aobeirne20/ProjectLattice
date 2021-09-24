@@ -78,6 +78,7 @@ class LG1_LondonNormal:
             # LINE TERMINATION
             if lnh.is_inside_boundaries(xs=self.xs, ys=self.ys, postdir=path_addenum[1].next_posdir) is False:
                 return None, path, stations
+
             elif termination_score - next_distance < 0:
                 return None, path, stations
 
@@ -183,16 +184,16 @@ class LG1_LondonNormal:
         finalized_intrs = []
         for intr in intr_lists[0]:
             if np.random.choice([True, False], p=config.P_seg_onto_seg):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
         for intr in intr_lists[1]:
             if np.random.choice([True, False], p=config.P_seg_onto_curve):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
         for intr in intr_lists[2]:
             if np.random.choice([True, False], p=config.P_curve_onto_seg):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
         for intr in intr_lists[3]:
             if np.random.choice([True, False], p=config.P_curve_onto_curve):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
         return finalized_intrs
 
 

@@ -40,7 +40,7 @@ dlr_names = [
      'Stratford High Street', 'Stratford International', 'Tower Gateway', 'West Ham', 'West India Quay', 'West Silvertown', 'Westferry',
      'Woolwich Arsenal'], ['Thames Wharf', 'Beckton Riverside', 'Thamesmead Central'], []]
 
-underground = [
+underground_names = [
     ['Acton Town', 'Aldgate', 'Aldgate East', 'Alperton', 'Amersham', 'Angel', 'Archway', 'Arnos Grove', 'Arsenal', 'Baker Street', 'Balham', 'Bank',
      'Barbican', 'Barking', 'Barkingside', 'Barons Court', 'Battersea Power Station', 'Bayswater', 'Becontree', 'Belsize Park', 'Bermondsey',
      'Bethnal Green', 'Blackfriars', 'Blackhorse Road', 'Bond Street', 'Borough', 'Boston Manor', 'Bounds Green', 'Bow Road', 'Brent Cross',

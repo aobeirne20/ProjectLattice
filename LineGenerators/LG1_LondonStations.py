@@ -54,9 +54,11 @@ class LG1_LondonStations:
 
                 if np.random.choice([True, False], p=[0.4, 0.6]):
                     pattern *= r.uniform(0.5, 1.5)
+                    if pattern < config.station_distance:
+                        pattern = None
 
             for potential_stations in current_stations:
-
+                pass
 
         return current_stations
 

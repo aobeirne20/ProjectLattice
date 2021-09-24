@@ -61,7 +61,18 @@ class Map:
                 closest_d = dis
         return closest_d
 
+    def all_checks(self, additional_stations):
+        for thing in self.primary_feature_list:
+            print(thing)
 
+        for thing in self.line_list:
+            print(thing)
+
+        for thing in self.locus_list:
+            print(thing)
+
+        for thing in additional_stations:
+            print(thing)
 
     # Node checks the new (next) node, for potential sandwich section segments
     def seg_node_check(self, seg2):
