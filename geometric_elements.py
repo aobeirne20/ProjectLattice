@@ -2,10 +2,11 @@ import math
 
 
 class Segment:
-    def __init__(self, loc1, loc2, orientation):
+    def __init__(self, loc1, loc2, orientation, dis):
         self.loc1 = loc1
         self.loc2 = loc2
         self.orientation = orientation
+        self.distance = dis
         self.sandwich_R = None
         self.sandwich_L = None
 

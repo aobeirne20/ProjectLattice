@@ -9,15 +9,19 @@ exclusion_scale = exclusion_scale * sd.StyleDatabase.t_scale
 starting_exclusion_scale = 80
 starting_exclusion_scale = starting_exclusion_scale * sd.StyleDatabase.t_scale
 
-parallel_exclusion_scale = 80
+parallel_exclusion_scale = 60
 parallel_exclusion_scale = parallel_exclusion_scale * sd.StyleDatabase.t_scale
 
-interchange_exclusion_scale = 50
+interchange_exclusion_scale = 60
 interchange_exclusion_scale = interchange_exclusion_scale * sd.StyleDatabase.t_scale
 
 termination_score_min_max = [0.5, 1.5]
 
+sandwich_distance = 16
+sandwich_distance *= sd.StyleDatabase.t_scale
 
+station_distance = 60
+station_distance *= sd.StyleDatabase.t_scale
 
 
 x_box = [35/100, 65/100]
@@ -36,7 +40,9 @@ P_branch_trend_change = [0.15, 0.3, 0.1, 0.3, 0.15]
 branch_t_f = 4
 
 P_seg_onto_seg = [0.95, 0.05]
-P_curve_onto_seg = [0.7, 0.3]
+P_seg_onto_curve = [0.7, 0.3]
+P_curve_onto_seg = [0.2, 0.8]
+P_curve_onto_curve = [0, 1]
 
 tscore = [1, 6]
 

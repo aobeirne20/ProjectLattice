@@ -1,20 +1,48 @@
 import geometric_elements as ge
 import aggdraw
+import math
 
 import PIL
 from PIL import Image
 import style_data as sd
 
+straight_unit_vectors = {0: (1, 0), 45: (math.sqrt(0.5), -1 * math.sqrt(0.5)), 90: (0, -1), 135: (-1 * math.sqrt(0.5), -1 * math.sqrt(0.5)),
+                         180: (-1, 0), 225: (-1 * math.sqrt(0.5), math.sqrt(0.5)), 270: (0, 1), 315: (math.sqrt(0.5), math.sqrt(0.5)), 360: (1, 0)}
 
 class LR1_LondonNormal:
-    def __init__(self, xs, ys, render_path, style):
+    def __init__(self, xs, ys, line):
         self.xs = xs
         self.ys = ys
-        self.render_path = render_path
-        self.style = style
+        self.render_path = line.render_list
+        self.station_list = line.station_list
+
+        self.style = line.style
 
     def render(self):
+        # STATION NOTCH RENDERING
         img_slice = PIL.Image.new('RGBA', (self.xs, self.ys), color=(0, 0, 0, 0))
+        draw = aggdraw.Draw(img_slice)
+        black_border_pen = aggdraw.Pen(color=(0, 0, 0, 255), width=7 * sd.StyleDatabase.t_scale)
+        white_fill_brush = aggdraw.Brush(color=(255, 255, 255, 255))
+        single_color_pen = aggdraw.Pen(self.style["color"], 10 * sd.StyleDatabase.t_scale)
+        for station in self.station_list:
+            if station['name'] == 'Railway':
+                bounds = (station['location'][0] + 17 * sd.StyleDatabase.t_scale, station['location'][1] + 17 * sd.StyleDatabase.t_scale,
+                          station['location'][0] - 17 * sd.StyleDatabase.t_scale, station['location'][1] - 17 * sd.StyleDatabase.t_scale)
+                draw.ellipse(bounds, black_border_pen, white_fill_brush)
+            elif station['name'] == 'Single':
+                print(station['orientation'])
+                pos1 = station['location']
+                vector_along = (
+                    17.5 * sd.StyleDatabase.t_scale * straight_unit_vectors[station['orientation']][0],
+                    17.5 * sd.StyleDatabase.t_scale * straight_unit_vectors[station['orientation']][1])
+                pos2 = (pos1[0] + vector_along[0], pos1[1] + vector_along[1])
+                draw.line((pos1[0], pos1[1],
+                           pos2[0], pos2[1]), single_color_pen)
+        draw.flush()
+
+
+        # LINE RENDERING
         if self.style["style"] == "double":
             pens = [aggdraw.Pen(self.style["color"], 18*sd.StyleDatabase.t_scale),
                     aggdraw.Pen((255, 255, 255, 255), 8*sd.StyleDatabase.t_scale)]

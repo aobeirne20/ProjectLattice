@@ -1,15 +1,17 @@
 import geometric_elements as ge
 import aggdraw
+import math
 
 import PIL
 from PIL import Image
 import style_data as sd
 
 class RM2_LondonStations:
-    def __init__(self, xs, ys, locus_list):
+    def __init__(self, xs, ys, locus_list, line_list):
         self.xs = xs
         self.ys = ys
         self.locus_list = locus_list
+        self.line_list = line_list
         self.station_slices = []
 
     def render(self):

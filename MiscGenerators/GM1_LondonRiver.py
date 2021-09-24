@@ -52,7 +52,7 @@ class GM1_LondonRiver:
     def step_flat(self, cur_l):
         next_distance = random.randint(int(self.xs / 20), int(self.xs / 6))
         next_l = (cur_l[0] + next_distance, cur_l[1])
-        self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=0))
+        self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=0, dis=next_distance))
         return next_l
 
     def joint_ftc(self, cur_l, dir):
@@ -69,18 +69,18 @@ class GM1_LondonRiver:
             next_distance = random.randint(int(self.ys / 14), int(self.ys / 6))
             if current_dir == "up":
                 next_l = (cur_l[0], cur_l[1] - next_distance)
-                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=90))
+                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=90, dis=next_distance))
             elif current_dir == "down":
                 next_l = (cur_l[0], cur_l[1] + next_distance)
-                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=270))
+                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=270, dis=next_distance))
         elif current_dir == "dxup" or current_dir == "dxdn":
             next_distance = random.randint(int(self.ys / 14), int(self.ys / 6))
             if current_dir == "dxup":
                 next_l = (cur_l[0] + next_distance, cur_l[1] - next_distance)
-                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=45))
+                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=45, dis=next_distance))
             elif current_dir == "dxdn":
                 next_l = (cur_l[0] + next_distance, cur_l[1] + next_distance)
-                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=315))
+                self.render_list.append(ge.Segment(loc1=cur_l, loc2=next_l, orientation=315, dis=next_distance))
         return next_l
 
     def joint_ctf(self, cur_l, dir):

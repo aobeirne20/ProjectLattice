@@ -17,13 +17,24 @@ def distance_between_point_and_seg(seg, loc):
 
 
 def parallel_distance_between_seg_and_seg(seg1, seg2):
-    if parallel_or_colinear_detector(seg1, seg2):
-        if colinear_detector(seg1, seg2):
-            return 0
-        else:
-            return parallel_distance(seg1, seg2)
+    if isinstance(seg1, ge.Segment):
+        if is_parallel(seg1, seg2):
+            line1 = LineString([(seg1.loc1[0], seg1.loc1[1]), (seg1.loc2[0], seg1.loc2[1])])
+            line2 = LineString([(seg2.loc1[0], seg2.loc1[1]), (seg2.loc2[0], seg2.loc2[1])])
+            return line1.distance(line2)
+    return float('inf')
+
+
+def is_parallel(seg1, seg2):
+    ang1 = seg1.orientation
+    ang2 = seg2.orientation
+    if ang1 == ang2 or ang1 + 180 == ang2 or ang1 - 180 == ang2:
+        return True
     else:
-        return float('inf')
+        return False
+
+
+
 
 
 def location_of_intersection_of_two_segs(seg1, seg2):

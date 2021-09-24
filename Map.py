@@ -27,16 +27,18 @@ class Map:
 
     # Returns the distance of the given segment to its closest parallel object, and the name of that object
     def seg_parallel_check(self, seg2):
-        thing_name = None
+        part = None
+        line = None
         closest_d = np.maximum(self.size[0], self.size[1])
         for thing in self.primary_feature_list + self.line_list:
             if isinstance(thing, Line):
                 for seg1 in thing.render_list:
                     dis = MC.parallel_distance_between_seg_and_seg(seg1, seg2)
                     if dis < closest_d:
-                        thing_name = thing.name
+                        line = thing
+                        part = seg1
                         closest_d = dis
-        return {"distance": closest_d, "object": thing_name}
+        return {"distance": closest_d, "object": part, "line": line}
 
     # Returns the location and object of any crossings
     def seg_crossing_check(self, seg2):
@@ -67,10 +69,11 @@ class Map:
 
 
 class Line:
-    def __init__(self, name, style, render_list):
+    def __init__(self, name, style, render_list, station_list):
         self.name = name
         self.style = style
         self.render_list = render_list
+        self.station_list = station_list
 
 
 class Locus:

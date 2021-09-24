@@ -70,11 +70,14 @@ def pick_start_dir(starting_location):
 
 def potential_start_stations(xs, ys, map_network):
     all_locs = []
-    for station in map_network.locus_list:
-        if station['name'] == 'Interchange':
-            test_postdir = PositionAndDirection(x=station['location'][0], y=station['location'][1], dirc=None)
-            if is_inside_starting_boundaries(xs, ys, test_postdir):
-                all_locs.append(test_postdir)
+    if map_network.locus_list is False:
+        return all_locs
+    else:
+        for station in map_network.locus_list:
+            if station['name'] == 'Interchange':
+                test_postdir = PositionAndDirection(x=station['location'][0], y=station['location'][1], dirc=None)
+                if is_inside_starting_boundaries(xs, ys, test_postdir):
+                    all_locs.append(test_postdir)
     return all_locs
 
 
@@ -91,7 +94,7 @@ def create_straight(xs, ys, posdir, force_distance, mod_distance_f):
     next_vector = (int(next_distance * straight_unit_vectors[posdir.dirc][0]),
                    int(next_distance * straight_unit_vectors[posdir.dirc][1]))
     next_posdir = PositionAndDirection(x=posdir.x + next_vector[0], y=posdir.y + next_vector[1], dirc=posdir.dirc)
-    next_segment = ge.Segment(loc1=(posdir.x, posdir.y), loc2=(next_posdir.x, next_posdir.y), orientation=posdir.dirc)
+    next_segment = ge.Segment(loc1=(posdir.x, posdir.y), loc2=(next_posdir.x, next_posdir.y), orientation=posdir.dirc, dis=next_distance)
     return next_posdir, next_segment, next_distance
 
 
@@ -163,12 +166,22 @@ def check_for_interchange_new_straight(next_segment, map_network):
 def check_for_interchange_new_curve(next_curve, map_network):
     return map_network.seg_crossing_check(next_curve)
 
-
-def is_wrong_sandwich(next_segment, map_network):
-    if map_network.seg_parallel_check(next_segment)["distance"] < config.parallel_exclusion_scale:
-        return True
+def check_for_any_collision(part, map_network):
+    crossing_dict = map_network.seg_crossing_check(part)
+    object_list = []
+    for c in crossing_dict:
+        object_list.append(c['object'])
+    if crossing_dict is not None:
+        return True, object_list
     else:
-        return False
+        return False, None
+
+def wrong_sandwich(next_segment, map_network):
+    seg_parallel_check = map_network.seg_parallel_check(next_segment)
+    if seg_parallel_check["distance"] < config.parallel_exclusion_scale:
+        return seg_parallel_check
+    else:
+        return None
 
 def check_for_interchange_dis(location, map_network):
     if map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale/50:

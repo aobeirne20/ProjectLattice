@@ -28,11 +28,11 @@ class R1_London:
 
     def render_lines(self):
         for line in self.map.line_list:
-            rm = LR1_LondonNormal.LR1_LondonNormal(self.xs, self.ys, line.render_list, style=line.style)
+            rm = LR1_LondonNormal.LR1_LondonNormal(self.xs, self.ys, line)
             self.render_slices.append(rm.render())
 
     def render_loci(self):
-        rm = RM2_LondonStations.RM2_LondonStations(self.xs, self.ys, self.map.locus_list)
+        rm = RM2_LondonStations.RM2_LondonStations(self.xs, self.ys, self.map.locus_list, self.map.line_list)
         self.render_slices = self.render_slices + rm.render()
 
     def give_render(self):

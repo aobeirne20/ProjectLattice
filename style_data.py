@@ -1,6 +1,6 @@
 
 class StyleDatabase:
-    aa_scale = 1
+    aa_scale = 2
     map_scale = 1
     t_scale = aa_scale * map_scale
 

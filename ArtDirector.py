@@ -3,12 +3,14 @@ import ImageGen as IG
 
 import os
 import json
+import sys
 
 
 class ArtDirector:
     def __init__(self):
         self.art_order = []
         self.batch_value = None
+        sys.setrecursionlimit(10000)
 
     def calc_order_dist(self, art_order, art_types_n, art_types_p):
         print(f"ORDER SUMMARY:")
