@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from shapely.geometry import LineString, Point
+from matplotlib import pyplot
 
 import geometric_elements as ge
 
@@ -90,8 +91,8 @@ def location_of_intersection_of_two_segs(seg1, seg2):
                 y = centery + radius * np.sin(theta)
 
                 arc_coords = np.column_stack(np.asarray([x, y]))
-                line_coords = np.concatenate([line_coords, arc_coords])
-                line_coords = np.concatenate([line_coords, np.asarray([[seg.outro_seg[2], seg.outro_seg[3]]])])
+                line_coords = np.concatenate([arc_coords, line_coords])
+                line_coords = np.concatenate([np.asarray([[seg.outro_seg[2], seg.outro_seg[3]]]), line_coords])
 
                 line1 = LineString(line_coords)
             lines.append(line1)

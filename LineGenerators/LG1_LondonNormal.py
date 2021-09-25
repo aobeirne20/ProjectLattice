@@ -87,30 +87,33 @@ class LG1_LondonNormal:
             if wrong_sandwich:
                 # Make a sandwich
                 correct_sandwich = np.random.choice([True, False], p=[1, 0])
-                # if wrong_sandwich['object'] != "LondonRiver" and correct_sandwich and change is not None:
-                #     path = self.sandwich_maker(path=path, ws=wrong_sandwich, package=path_addenum, next_distance=next_distance)
-                #     sandwich = True
-                # else:
-                error_package = ChildErrorPackage("PARALLEL_SEGMENT_ERROR")
-                attempt_score -= 20
+                # Coming from the origin
+                if path[-1].part == 'origin':
+                    error_package = ChildErrorPackage("PARALLEL_SEGMENT_ERROR")
+                    attempt_score -= 101
+                elif wrong_sandwich['object'] != "LondonRiver" and correct_sandwich and change is not None:
+                    print("making actual sandwich")
+                    path = self.sandwich_maker(path=path, ws=wrong_sandwich, package=path_addenum, next_distance=next_distance)
+                    sandwich = True
+                else:
+                    error_package = ChildErrorPackage("PARALLEL_SEGMENT_ERROR")
+                    attempt_score -= 20
                 continue
 
             # INTERCHANGE ERROR / GENERATION
             intr_lists = self.interchange_generation(path_addenum, change)
             finalized_interchanges = self.interchange_placement(intr_lists)
             checked_interchanges = []
-            overall_valid = True
             for intr in finalized_interchanges:
                 valid, do_place = lnh.check_for_interchange_dis(intr['location'], self.map)
-                if valid is False:
-                    overall_valid = False
-                if do_place is True:
+                if valid is True:
+                    if do_place is True:
+                        checked_interchanges.append(intr)
+                else:
+                    error_package = ChildErrorPackage("INTERCHANGE_CLOSENESS_ERROR")
+                    attempt_score -= 50
+                    continue
 
-                    checked_interchanges.append(intr)
-            if overall_valid is False:
-                error_package = ChildErrorPackage("INTERCHANGE_CLOSENESS_ERROR")
-                attempt_score -= 50
-                continue
             stations += checked_interchanges
 
 
@@ -142,6 +145,7 @@ class LG1_LondonNormal:
                                                             force_distance=new_distance, mod_distance_f=None)
         path.append(PathElement(old_posdir, next_segment, end_posdir))
         return path
+
 
 
 
@@ -208,7 +212,15 @@ class LG1_LondonNormal:
 
     def sandwich_maker(self, path, ws, package, next_distance):
         # Find the distance along the previous path to change (+ longer, - shorter)
+        existing_orientation = ws['object'].orientation
+        incoming_orientation = path[-1].next_posdir.dirc
+        perp_distance = ws['distance']
 
+        angle_diff = lnh.angle_difference(incoming_orientation, existing_orientation)
+        dis_change = perp_distance / np.sin(angle_diff)
+
+        if np.random.choice(['True', 'False'], p=[0.5, 0.5]):
+            pass
 
 
 

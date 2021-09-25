@@ -32,7 +32,7 @@ class LR1_LondonNormal:
             if station['name'] == 'Railway':
                 bounds = (station['location'][0] + 17 * sd.StyleDatabase.t_scale, station['location'][1] + 17 * sd.StyleDatabase.t_scale,
                           station['location'][0] - 17 * sd.StyleDatabase.t_scale, station['location'][1] - 17 * sd.StyleDatabase.t_scale)
-                station_text_location_list.append({'location': station['location'], 'type': self.style['type']})
+                station_text_location_list.append({'location': station['location'], 'type': self.style['name_type']})
                 draw.ellipse(bounds, black_border_pen, white_fill_brush)
             elif station['name'] == 'Single':
                 pos1 = station['location']
@@ -42,7 +42,7 @@ class LR1_LondonNormal:
                 pos2 = (pos1[0] + vector_along[0], pos1[1] + vector_along[1])
                 draw.line((pos1[0], pos1[1],
                            pos2[0], pos2[1]), single_color_pen)
-                station_text_location_list.append({'location': pos2, 'type': self.style['type']})
+                station_text_location_list.append({'location': pos2, 'type': self.style['name_type']})
         draw.flush()
 
 

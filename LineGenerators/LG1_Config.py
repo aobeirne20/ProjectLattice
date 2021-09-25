@@ -12,7 +12,7 @@ starting_exclusion_scale = starting_exclusion_scale * sd.StyleDatabase.t_scale
 parallel_exclusion_scale = 60
 parallel_exclusion_scale = parallel_exclusion_scale * sd.StyleDatabase.t_scale
 
-interchange_exclusion_scale = 200
+interchange_exclusion_scale = 0
 interchange_exclusion_scale = interchange_exclusion_scale * sd.StyleDatabase.t_scale
 
 termination_score_min_max = [0.5, 1.5]

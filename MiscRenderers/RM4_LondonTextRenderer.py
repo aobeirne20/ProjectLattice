@@ -17,7 +17,7 @@ class RM4_LondonTextRenderer():
     def render(self):
         img_slice = PIL.Image.new('RGBA', (self.xs, self.ys), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img_slice)
-        font = ImageFont.truetype("Railway-Semibold.ttf", 60)
+        font = ImageFont.truetype("Railway-Semibold.ttf", 30)
         for station in self.text_loc_list:
             name = self.text_giver.give_name(station['type'])
             draw.text(station['location'], name, font=font, fill=(0, 0, 0, 255))

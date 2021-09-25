@@ -58,6 +58,7 @@ class RM3_LondonTextPreparer():
             pool_code = 4
         else:
             print(f"This name pool does not exist.")
+            pool_code = 4
 
         while True:
             if self.pools_list[pool_code] is False:
