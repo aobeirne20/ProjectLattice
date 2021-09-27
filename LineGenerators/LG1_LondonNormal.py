@@ -5,13 +5,15 @@ import numpy as np
 import geometric_elements as ge
 from LineGenerators import LG1_LondonNormalHelper as lnh
 from LineGenerators import LG1_Config as config
+import MapChecks as MC
 
 
 class LG1_LondonNormal:
-    def __init__(self, xs, ys, map):
+    def __init__(self, xs, ys, map, line):
         self.map = map
         self.xs = xs
         self.ys = ys
+        self.line = line
 
     def outer_generate(self):
         # ORIGIN
@@ -46,7 +48,7 @@ class LG1_LondonNormal:
     def gen_origin(self):
         # Calculate chance to start on an interchange
         potential_start_interchanges = lnh.potential_start_stations(xs=self.xs, ys=self.ys, map_network=self.map)
-        chance = math.sqrt(len(potential_start_interchanges) * 0.5) / 8
+        chance = math.sqrt(len(potential_start_interchanges) * 0.5) / 10
         p_chance_to_start_on_int = [chance, 1 - chance]
 
         # CHOICE: True, start on interchange; False, start on random location
@@ -70,7 +72,7 @@ class LG1_LondonNormal:
     def r_gen_package(self, path, stations, trend, instruction, termination_score):
         attempt_score = 100
         error_package = None
-        sandwich = False
+        skip_interchange_check = False
         while attempt_score > 0:
             # PACKAGE GENERATION
             path_addenum, change, next_distance = make_package(path, trend, self.xs, self.ys, instruction)
@@ -84,47 +86,50 @@ class LG1_LondonNormal:
 
             # SANDWICH ERROR / GENERATOR
             wrong_sandwich = lnh.wrong_sandwich(path_addenum[1].part, self.map)
-            if wrong_sandwich:
-                # Make a sandwich
-                correct_sandwich = np.random.choice([True, False], p=[1, 0])
+            if wrong_sandwich is not None:
                 # Coming from the origin
                 if path[-1].part == 'origin':
                     error_package = ChildErrorPackage("PARALLEL_SEGMENT_ERROR")
                     attempt_score -= 101
-                elif wrong_sandwich['object'] != "LondonRiver" and correct_sandwich and change is not None:
-                    print("making actual sandwich")
-                    path = self.sandwich_maker(path=path, ws=wrong_sandwich, package=path_addenum, next_distance=next_distance)
-                    sandwich = True
+                    continue
                 else:
                     error_package = ChildErrorPackage("PARALLEL_SEGMENT_ERROR")
                     attempt_score -= 20
-                continue
-
-            # INTERCHANGE ERROR / GENERATION
-            intr_lists = self.interchange_generation(path_addenum, change)
-            finalized_interchanges = self.interchange_placement(intr_lists)
-            checked_interchanges = []
-            for intr in finalized_interchanges:
-                valid, do_place = lnh.check_for_interchange_dis(intr['location'], self.map)
-                if valid is True:
-                    if do_place is True:
-                        checked_interchanges.append(intr)
-                else:
-                    error_package = ChildErrorPackage("INTERCHANGE_CLOSENESS_ERROR")
-                    attempt_score -= 50
                     continue
 
-            stations += checked_interchanges
+
+
+            if skip_interchange_check is False:
+                # INTERCHANGE ERROR / GENERATION
+                intr_lists = self.interchange_generation(path_addenum, change)
+                finalized_interchanges = self.interchange_placement(intr_lists)
+                checked_interchanges = []
+                for intr in finalized_interchanges:
+                    valid, do_place = lnh.check_for_interchange_dis(intr['location'], self.map)
+                    if valid is True:
+                        intr['lines'].append(self.line)
+                        if do_place is True:
+                            checked_interchanges.append(intr)
+                    else:
+                        error_package = ChildErrorPackage("INTERCHANGE_CLOSENESS_ERROR")
+                        attempt_score -= 50
+                        continue
+
+                stations += checked_interchanges
 
 
             # CONTINUING GENERATION
-            if change is None:
+            if path_addenum is None:
+                child_error, path, stations = self.r_gen_package(path, stations=stations, trend=trend, instruction=None,
+                                                                 termination_score=termination_score - next_distance)
+            elif change is None:
                 path = self.modify_last_segment(path=path, next_distance=next_distance)
-                child_error, path, stations = self.r_gen_package(path, stations=stations, trend=trend,instruction=None, termination_score=termination_score - next_distance)
+                child_error, path, stations = self.r_gen_package(path, stations=stations, trend=trend, instruction=None, termination_score=termination_score - next_distance)
             else:
                 child_error, path, stations = self.r_gen_package(path + path_addenum, stations=stations, trend=trend, instruction=None, termination_score=termination_score - next_distance)
 
-            # RETURNING NON-ERROR PATH
+
+            # RETURNING NON-ERROR/ERROR PATH
             if child_error is None:
                 return None, path, stations
             else:
@@ -147,6 +152,27 @@ class LG1_LondonNormal:
         return path
 
 
+    def r_gen_terminus(self, path, stations, trend, instruction, termination_score):
+        attempt_score = 100  # nit: change to attempts_remaining (you know about the refactor feature to change a name everywhere right?)
+        error_package = None
+        sandwich = False
+        while attempt_score > 0:
+
+            # PACKAGE GENERATION
+            path_addenum, change, next_distance = make_package(path, trend, self.xs, self.ys, instruction)
+            intr_lists = self.interchange_generation(path_addenum, change)
+            finalized_interchanges = self.interchange_placement(intr_lists)
+            checked_interchanges = []
+            for intr in finalized_interchanges:
+                valid, do_place = lnh.check_for_interchange_dis(intr['location'], self.map)
+                if valid is True:
+                    if do_place is True:
+                        checked_interchanges.append(intr)
+                else:
+                    error_package = ChildErrorPackage("INTERCHANGE_CLOSENESS_ERROR")
+                    attempt_score -= 50
+                    continue
+
 
 
 
@@ -156,6 +182,7 @@ class LG1_LondonNormal:
         straight_on_curve = []
         curve_on_straight = []
         curve_on_curve = []
+
         if change is None:
             interchange_list = lnh.check_for_interchange_new_straight(path_addenum[1].part, self.map)
             for intc in interchange_list:
@@ -188,16 +215,16 @@ class LG1_LondonNormal:
         finalized_intrs = []
         for intr in intr_lists[0]:
             if np.random.choice([True, False], p=config.P_seg_onto_seg):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground', 'lines': [intr['object']]})
         for intr in intr_lists[1]:
             if np.random.choice([True, False], p=config.P_seg_onto_curve):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground', 'lines': [intr['object']]})
         for intr in intr_lists[2]:
             if np.random.choice([True, False], p=config.P_curve_onto_seg):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground', 'lines': [intr['object']]})
         for intr in intr_lists[3]:
             if np.random.choice([True, False], p=config.P_curve_onto_curve):
-                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground'})
+                finalized_intrs.append({'location': intr['location'], 'name': 'Interchange', 'type': 'underground', 'lines': [intr['object']]})
         return finalized_intrs
 
 
@@ -210,31 +237,42 @@ class LG1_LondonNormal:
             #print(part.part)
             pass
 
-    def sandwich_maker(self, path, ws, package, next_distance):
+    def sandwich_maker(self, path, ws, package, next_distance, change):
         # Find the distance along the previous path to change (+ longer, - shorter)
         existing_orientation = ws['object'].orientation
         incoming_orientation = path[-1].next_posdir.dirc
         perp_distance = ws['distance']
 
         angle_diff = lnh.angle_difference(incoming_orientation, existing_orientation)
+        # Distance to place directly on top
         dis_change = perp_distance / np.sin(angle_diff)
 
-        if np.random.choice(['True', 'False'], p=[0.5, 0.5]):
-            pass
+        print(perp_distance)
+        test1 = MC.location_of_intersection_of_two_segs(ws['object'], package[0].part)
+        test2 = MC.location_of_intersection_of_two_segs(ws['object'], path[-1].part)
 
+        if test1 is not None or test2 is not None:
+            print("Intersection detected")
+            dis_change *= -1
+        else:
+            print("No intersection")
+        # Move above or move below
+        # if np.random.choice(['True', 'False'], p=[0.5, 0.5]):
+        #     dis_change += 18 * config.sandwich_distance
+        # else:
+        #     dis_change -= 18 * config.sandwich_distance
 
+        print(f"Now changing segment by {dis_change}")
+        path = self.modify_last_segment(path, dis_change)
 
-        distance_to_fix = config.sandwich_distance - ws['distance']
+        middle_posdir, next_curve, change = lnh.pick_next_curve(path[-1].next_posdir, 0, force_change=change)
+        end_posdir, next_segment, next_distance = lnh.create_straight(self.xs, self.ys, middle_posdir, force_distance=5000,
+                                                                      mod_distance_f=None)
 
-        print(f"Making sandwich with {ws['object']}")
+        path_addenum = [PathElement(path[-1].next_posdir, next_curve, middle_posdir), PathElement(middle_posdir, next_segment, end_posdir)]
+        path.append(path_addenum[0])
+        path.append(path_addenum[1])
 
-        if positive_or_negative(from_seg=package[1].part, to_seg=ws['object']):
-            distance_to_fix *= -1
-
-
-        next_distance += distance_to_fix
-
-        path = self.modify_last_segment(path, next_distance)
 
         return path
 
@@ -319,7 +357,9 @@ class Instruction:
         if self.command == 'first_seg':
             return 0, None, 0.5
         if self.command == 'hard_right':
-            return 90, 1000, 1
+            return 90, 10000, 1
+        if self.command == 'end':
+            return None, None, 0
         else:
             print(f"Command not registered")
 

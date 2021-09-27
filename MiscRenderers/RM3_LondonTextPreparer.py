@@ -20,32 +20,43 @@ class RM3_LondonTextPreparer():
         for pool in pool_dict:
             name_list = pool_dict[pool]
             primary_list = name_list[0]
-            alternate_list = name_list[1]
+            closedfuture_list = name_list[1]
             substitute_list = name_list[2]
             shuffled_list = []
 
-            backup_pool += alternate_list
-            backup_pool += substitute_list
+            r.shuffle(closedfuture_list)
 
-            r.shuffle(primary_list)
+            backup_pool += primary_list
+            backup_pool += closedfuture_list
+
+            for sub in substitute_list:
+                if sub is not None:
+                    for inner_sub in sub:
+                        backup_pool.append(inner_sub)
+
             for num, name in enumerate(primary_list):
                 if substitute_list:
                     if substitute_list[num] is not None:
-                        if np.random.choice([True, False], p=[0.1, 0.9]):
+                        if np.random.choice([True, False], p=[0.05, 0.95]):
                             sub_name = np.random.choice(substitute_list[num])
                             shuffled_list.append(sub_name)
                             continue
-                if alternate_list and np.random.choice([True, False], p=[0.2, 0.8]):
-                    shuffled_list.append(alternate_list.pop())
-                shuffled_list.append(primary_list[num])
+                        else:
+                            shuffled_list.append(name)
+
+                if closedfuture_list and np.random.choice([True, False], p=[0.1, 0.9]):
+                    shuffled_list.append(closedfuture_list.pop())
+
+            r.shuffle(shuffled_list)
             pool_lists.append(shuffled_list)
 
         self.pools_list = pool_lists
         self.backup_pool = backup_pool
+        r.shuffle(self.backup_pool)
         self.used_list = []
 
-
     def give_name(self, name_pool):
+        names_list = []
         if name_pool == 'crossrail':
             pool_code = 0
         elif name_pool == 'overground':
@@ -61,7 +72,7 @@ class RM3_LondonTextPreparer():
             pool_code = 4
 
         while True:
-            if self.pools_list[pool_code] is False:
+            if bool(self.pools_list[pool_code]) is False:
                 name = self.backup_pool.pop()
             else:
                 name = self.pools_list[pool_code].pop()
@@ -70,4 +81,33 @@ class RM3_LondonTextPreparer():
                 continue
             else:
                 self.used_list.append(name)
-                return name
+                break
+
+        def space_recursor(phrase, location, built_phrase):
+            if location == len(phrase):
+                names_list.append(built_phrase)
+                return
+
+            if phrase[location] == ' ':
+                if phrase[location+1] == '&':
+                    pass
+                else:
+                    space_recursor(phrase, location+1, built_phrase+'\n')
+                space_recursor(phrase, location+1, built_phrase+' ')
+            else:
+                space_recursor(phrase, location+1, built_phrase+phrase[location])
+
+
+        space_recursor(name, 0, '')
+        return names_list
+
+
+
+
+
+
+
+
+
+
+

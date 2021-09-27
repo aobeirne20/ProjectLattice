@@ -1,6 +1,7 @@
 import Map
 from MiscGenerators import GM1_LondonRiver
-from LineGenerators import LG1_LondonNormal, LG1_LondonStations
+from LineGenerators import LG1_LondonNormal, LG1_LondonStations, LG1_LondonInterchanges
+from MiscRenderers import RM3_LondonTextPreparer
 import random
 
 import style_data
@@ -29,7 +30,7 @@ class G1_London:
         random.shuffle(shuffled_keys)
         for line in shuffled_keys:
             if self.SD[line]['gen_type'] == "secant":
-                gen = LG1_LondonNormal.LG1_LondonNormal(self.xs, self.ys, self.map)
+                gen = LG1_LondonNormal.LG1_LondonNormal(self.xs, self.ys, self.map, line)
                 print(f"-----------------------------------------------------------")
                 print(line)
                 render_list, stations = gen.outer_generate()
@@ -53,9 +54,15 @@ class G1_London:
 
 
     def generate_stations(self):
+        text_giver = RM3_LondonTextPreparer.RM3_LondonTextPreparer()
+        gen = LG1_LondonInterchanges.LG1_LondonInterchanges(self.xs, self.ys, self.map, text_giver)
+        stations = gen.generate_stations()
+        self.map.text_list = stations
         for line in self.map.line_list:
-            gen = LG1_LondonStations.LG1_LondonStations(self.xs, self.ys, self.map)
-            line.station_list = gen.generate_stations(line)
+            gen = LG1_LondonStations.LG1_LondonStations(self.xs, self.ys, self.map, text_giver)
+            temp = gen.generate_stations(line)
+            self.map.text_list += temp
+            line.station_list = temp
 
     def give_map(self):
         return self.map

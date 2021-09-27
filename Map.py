@@ -11,7 +11,9 @@ class Map:
         self.primary_feature_list = []
         self.line_list = []
         self.locus_list = []
-        self.secondary_feature_list = []
+        self.text_list = []
+        self.text_bbox_list = []
+
 
     # Returns the distance of the given location to its closest object, and the name of that object
     def node_check(self, loc):
@@ -21,6 +23,17 @@ class Map:
                 for seg in thing.render_list:
                     dis = MC.distance_between_point_and_seg(seg, loc)
                     if dis < closest_d:
+                        thing_name = thing.name
+                        closest_d = dis
+        return {"distance": closest_d, "object": thing_name}
+
+    def node_check_exclusion(self, loc, line_name):
+        closest_d = np.maximum(self.size[0], self.size[1])
+        for thing in self.primary_feature_list + self.line_list:
+            if isinstance(thing, Line):
+                for seg in thing.render_list:
+                    dis = MC.distance_between_point_and_seg(seg, loc)
+                    if dis < closest_d and thing.name != line_name:
                         thing_name = thing.name
                         closest_d = dis
         return {"distance": closest_d, "object": thing_name}

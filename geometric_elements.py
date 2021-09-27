@@ -217,6 +217,7 @@ class Arc45:
         self.bottom_r = (center[0] + curve_scale, center[1] + curve_scale)
         self.center = center
 
+
     def render(self, pen, draw):
         draw.arc((self.upper_l[0], self.upper_l[1], self.bottom_r[0], self.bottom_r[1]),
                  self.start_d - 3, self.end_d + 3, pen)

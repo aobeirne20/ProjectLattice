@@ -184,7 +184,7 @@ def wrong_sandwich(next_segment, map_network):
         return None
 
 def check_for_interchange_dis(location, map_network):
-    if map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale/50:
+    if map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale/100:
         return True, False
     elif map_network.interchange_dist_check(location[0], location[1]) < config.interchange_exclusion_scale:
         return False, False
