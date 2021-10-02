@@ -328,3 +328,6 @@ def angle_difference(from_ang, to_ang):
         return 0
 
 
+def distance_to_change_flexible(theta_flexible, theta_fixed, distance):
+    theta = angle_difference(theta_fixed, theta_flexible)
+    

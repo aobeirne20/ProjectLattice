@@ -70,7 +70,7 @@ class LG1_LondonNormal:
         return origin_posdir, trend, flip_posdir, flip_trend
 
     def r_gen_package(self, path, stations, trend, instruction, termination_score):
-        attempt_score = 100
+        attempt_score = 100 # nit: change to attempts_remaining (you know about the refactor feature to change a name everywhere right?)
         error_package = None
         skip_interchange_check = False
         while attempt_score > 0:
