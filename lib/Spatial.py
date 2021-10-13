@@ -1,4 +1,4 @@
-from degree import degree
+from lib.degree import degree
 
 
 class Spatial:

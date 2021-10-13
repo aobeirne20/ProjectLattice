@@ -10,11 +10,11 @@ class degree(int):
         return super(cls, cls).__new__(cls, value)
 
     def __add__(self, other: int):
-        sum = super(degree, self).__add__(other)
-        sum = sum % 8
-        if sum < 0:
-            sum = 8 + sum
-        return self.__class__(sum)
+        summ = super(degree, self).__add__(other)
+        summ = summ % 8
+        if summ < 0:
+            summ = 8 + summ
+        return self.__class__(summ)
 
     def __sub__(self, other: int):
         diff = super(degree, self).__sub__(other)
@@ -26,6 +26,10 @@ class degree(int):
     @property
     def deg(self):
         return int(self * 45)
+
+    @property
+    def inv_deg(self):
+        return int((8 - self) * 45)
 
     @property
     def rad(self):
