@@ -1,5 +1,5 @@
 from lib.degree import degree
-from lib.Geometry import Geometry, Straight, Arc, Station, Terminus
+from lib.Geometry import Geometry, Straight, Arc, Station, Terminus, InterchangeNode, InterchangeConnector, HandicapNode
 from lib.Spatial import Spatial
 
 import aggdraw
@@ -9,11 +9,23 @@ s1 = Spatial(x=200, y=200, o=degree(1))
 a = Straight(s1, 100)
 b = Arc(a.spatial2, -3, 50)
 c = Arc(b.spatial2, 1, 100)
-d = Station(a.spatial2, True, 30)
+d = Station(a.spatial2, False, 30)
 e = Terminus(c.spatial2, 30)
+f = InterchangeNode(b.spatial2)
+h = HandicapNode(a.spatial1)
+i = InterchangeConnector(b.spatial2, a.spatial1)
 
 pen = aggdraw.Pen((255, 255, 255, 255), 20)
-img_slice = PIL.Image.new('RGBA', (500, 500), color=(20, 80, 200, 255))
+brush = aggdraw.Brush((0, 0, 0, 255))
+brush2 = aggdraw.Brush((255, 255, 255, 255))
+pen2 = aggdraw.Pen((0, 0, 0, 255), 20)
+pen3 = aggdraw.Pen((255, 255, 255, 255), 10)
+
+bluebrush = aggdraw.Brush((28, 63, 149, 255))
+bluepen = aggdraw.Pen((28, 63, 149, 255), 4)
+wpen = aggdraw.Pen((255, 255, 255, 255), 2.5)
+
+img_slice = PIL.Image.new('RGBA', (500, 500), color=(200, 80, 100, 255))
 draw = aggdraw.Draw(img_slice)
 
 a.execute_render(draw, pen)
@@ -21,6 +33,15 @@ b.execute_render(draw, pen)
 c.execute_render(draw, pen)
 d.execute_render(draw, pen)
 e.execute_render(draw, pen)
+
+f.execute_render(draw, brush, 20)
+i.execute_render(draw, pen2)
+
+f.execute_render(draw, brush2, 15)
+i.execute_render(draw, pen3)
+
+h.execute_render(draw, bluebrush, 16, bluepen, wpen)
+
 draw.flush()
 img_slice.show()
 

@@ -67,39 +67,54 @@ class Arc(Geometry):
     def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen):
         draw.arc(self.render_mainfold[0], self.render_mainfold[1] - 2, self.render_mainfold[2] + 2, line_pen)
 
+
 class TextBBox(Geometry):
     pass
 
-class Interchange(Geometry):
-    def __init__(self, spatial1, line1, spatial2, line2):
+
+class InterchangeNode(Geometry):
+    def __init__(self, spatial1):
         super().__init__(spatial1)
         self.spatial2 = spatial1
-        self.node_list = []
-        self.stick_list = []
-        self.logic_manifold = None
-        self.render_mainfold = None
+        self.logic_manifold = Point(self.spatial1.t)
+        self.render_mainfold = [spatial1.x, spatial1.y, spatial1.x, spatial1.y]
+
+    def execute_render(self, draw: aggdraw.Draw, brush: aggdraw.Brush, radius: int):
+        ellipse_bounds = np.asarray(self.render_mainfold) + np.asarray([radius, radius, -1*radius, -1*radius])
+        draw.ellipse(tuple(ellipse_bounds), aggdraw.Pen((0, 0, 0, 0), 0, 0), brush)
 
 
-    def add_to_node(self, line, node):
+class HandicapNode(InterchangeNode):
+    def __init__(self, spatial1):
+        super().__init__(spatial1)
 
-    def add_node(self, line, spatial):
+    def execute_render(self, draw: aggdraw.Draw, brush: aggdraw.Brush, radius: int, cpen: aggdraw.Pen, pen: aggdraw.Pen):
+        ellipse_bounds = np.asarray(self.render_mainfold) + np.asarray([radius, radius, -1 * radius, -1 * radius])
+        draw.ellipse(tuple(ellipse_bounds), cpen, brush)
+        segment_list = [[-0.6, 0.5, -0.4, 0],
+                        [-0.4, 0, 0.2, 0],
+                        [0.2, 0, 0.2, -0.4],
+                        [0.2, -0.3, -0.3, -0.3],
+                        # Head
+                        [0.1, -0.6, 0.3, -0.6],
+                        [0.2, -0.5, 0.2, -0.7]]
+        arc_bounds = [-0.5, -0.3, 0.5, 0.7]
+        for segment in segment_list:
+            seg = np.multiply(np.asarray(segment), radius) + np.asarray(self.render_mainfold)
+            draw.line(tuple(seg), pen)
+        arc_bounds = np.multiply(np.asarray(arc_bounds), radius) + np.asarray(self.render_mainfold)
+        draw.arc(tuple(arc_bounds), 225, 45, pen)
+
+
+class InterchangeConnector(Geometry):
+    def __init__(self, spatial1, spatial2):
+        super().__init__(spatial1)
+        self.spatial2 = spatial2
+        self.logic_manifold = LineString([self.spatial1.t, self.spatial2.t])
+        self.render_mainfold = (self.spatial1.x, self.spatial1.y, self.spatial2.x, self.spatial2.y)
 
     def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen):
-        pass
-
-
-class InterchangeHook:
-    def __init__(self, line, spatial):
-        self.line = line
-        self.spatial = spatial
-
-
-class InterchangeNode:
-    def __init__(self):
-        self.hook_list = []
-
-    def add_connection(self, spatial, line):
-        self.hook_list.append(InterchangeHook(spatial, line))
+        draw.line(self.render_mainfold, line_pen)
 
 
 class Terminus(Geometry):
