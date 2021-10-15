@@ -7,12 +7,6 @@ class Spatial:
         self.y = y
         self.o = o
 
-    def vx(self, distance: int):
-        return self.o.ux * distance
-
-    def vy(self, distance: int):
-        return self.o.uy * distance
-
     @property
     def t(self):
         t = (self.x, self.y)

@@ -43,6 +43,12 @@ class degree(int):
     def uy(self):
         return math.sin(self.rad)
 
+    def vx(self, distance: int):
+        return self.ux * distance
+
+    def vy(self, distance: int):
+        return self.uy * distance
+
     def __str__(self):
         return "%d" % int(self)
 
