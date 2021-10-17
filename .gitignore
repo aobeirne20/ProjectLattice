@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+geometry_lib/
 lib64/
 parts/
 sdist/

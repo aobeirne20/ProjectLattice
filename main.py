@@ -1,6 +1,9 @@
-from lib.degree import degree
-from lib.Geometry import Geometry, Straight, Arc, Station, Terminus, InterchangeNode, InterchangeConnector, HandicapNode
-from lib.Spatial import Spatial
+from geometry_lib.degree import degree
+from geometry_lib.TrackGeometry import Straight, Arc
+from geometry_lib.StationGeometry import Station, Terminus
+from geometry_lib.InterchangeGeometry import InterchangeNode, InterchangeConnector, HandicapNode
+
+from geometry_lib.Spatial import Spatial
 
 import aggdraw
 import PIL
@@ -10,7 +13,7 @@ a = Straight(s1, 100)
 b = Arc(a.spatial2, -3, 50)
 c = Arc(b.spatial2, 1, 100)
 d = Station(a.spatial2, False, 30)
-e = Terminus(c.spatial2, 30)
+e = Terminus(c.spatial2, False, 30)
 f = InterchangeNode(b.spatial2)
 h = HandicapNode(a.spatial1)
 i = InterchangeConnector(b.spatial2, a.spatial1)
