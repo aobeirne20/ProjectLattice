@@ -12,3 +12,6 @@ class Spatial:
         t = (self.x, self.y)
         return t
 
+    def __str__(self):
+        return f"({self.x}, {self.y}) @ {self.o} [{self.o.deg}°]"
+

@@ -1,8 +1,9 @@
-from manager_lib import ArtAssistant as AA
-import ImageGen as IG
-
 import os
 import json
+import time
+
+from manager_lib import ArtAssistant as AA
+import ImageGen as IG
 
 
 class ArtDirector:
@@ -43,14 +44,29 @@ class ArtDirector:
 
     def i_am_a_creative_type(self):
         num = 1
+        gen_track = []
         print(f"Starting generation for {self.art_order['City']}:")
         for art_type in self.art_order["RList"]:
+            time_start = time.perf_counter()
             ig = IG.ImageGen(city=self.art_order['City'], art_type=art_type)
             image, metadata = ig.ex_nihilo_res()
             self.metadata += [metadata, num]
             image.save(f"Scratch/{num}.png")
             image.save(f"Gallery/Batch_{self.batch_value:03d}/All/{num}.png")
             image.save(f"Gallery/Batch_{self.batch_value:03d}/{art_type}/{num}.png")
+            time_end = time.perf_counter()
+
+            # Loading Bar
+            gen_track.append(time_end - time_start)
+            bar = u'\u2588'
+            n_blocks = int(num * 50 / len(self.art_order["RList"]))
+            time_remaining = (sum(gen_track)/len(gen_track)) * (len(self.art_order["RList"])-num)
+            m, s = divmod(time_remaining, 60)
+            h, m = divmod(m, 60)
+            print(f'\rPiece {num:04d}/{len(self.art_order["RList"]):04d} |{bar * n_blocks}{" " * (50 - n_blocks)}|  '
+                  f'Estimated Time Remaining: {h:.0f}h{m:.0f}m{s:.0f}s', end='')
+
+            # Increment the counter
             num += 1
 
     def i_sell_hotdogs(self, city, art_type):
@@ -65,7 +81,7 @@ class ArtDirector:
         ig = IG.ImageGen(city=city, art_type=art_type)
         image, metadata = ig.ex_nihilo_res()
         image.show() # REMOVE THIS LATER
-        image.save(f"Gallery/Hotdogs/RapidTopology_{scratch_value}_{city}_{art_type}.png")
+        image.save(f"Gallery/Hotdogs/MetroTopology_{scratch_value}_{city}_{art_type}.png")
 
     def finalize_metadata(self):
         print(f"\n\nFollowing instructions, after uploading the generated images to IPFS, please enter the CID of the root folder")

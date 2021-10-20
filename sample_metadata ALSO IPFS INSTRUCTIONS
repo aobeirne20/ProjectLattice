@@ -1,5 +1,5 @@
 {
-    "name": "London Underground #XXXX",
+    "name": "London #XXXX",
     "description": "Randomly generated network maps that evoke the style and principles of the London Underground",
     "attributes": [
         {
@@ -33,13 +33,3 @@
     ],
     "image": "ipfs://"
 }
-
-
-
-
-Instructions:
-0. Gen images. Gen metadata, without the url
-1. Make folder on Pinata. Put images in folder, London1, London2, or 1, 2, 3 etc.
-2. Save these urls into the metadatas, with a secondary function.
-3. Make folder on Pinata, Put metadatas into folder, 1, 2, 3
-4. Give folder url to solidity dev

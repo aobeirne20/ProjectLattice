@@ -10,14 +10,14 @@ class degree(int):
         return super(cls, cls).__new__(cls, value)
 
     def __add__(self, other: int):
-        summ = super(degree, self).__add__(other)
+        summ = super(degree, self).__add__(int(other))
         summ = summ % 8
         if summ < 0:
             summ = 8 + summ
         return self.__class__(summ)
 
     def __sub__(self, other: int):
-        diff = super(degree, self).__sub__(other)
+        diff = super(degree, self).__sub__(int(other))
         diff = diff % 8
         if diff < 0:
             diff = 8 + diff
@@ -42,6 +42,14 @@ class degree(int):
     @property
     def uy(self):
         return math.sin(self.rad)
+
+    @property
+    def change_to_0(self):
+        move = -1*int(self)
+        if move < -4:
+            return 8 + move
+        else:
+            return move
 
     def vx(self, distance: int):
         return self.ux * distance
