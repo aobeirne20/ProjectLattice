@@ -4,7 +4,7 @@ line_style_guide = {
         "color": (220, 36, 31, 255),
         "gen_type": "shuttle",
         "station_type": "shuttle",
-        "line_type": "double",
+        "line_type": "triple",
         "name_type": "underground"},
 
     "DLR": {
