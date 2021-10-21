@@ -48,12 +48,10 @@ class Arc(TrackGeometry):
         self.logic_manifold = LineString(np.column_stack([x, y]))
 
         # BUILD THE RENDER MANIFOLD
-        if arc_angle_change > 0:
-            arc_angle_1 = o_center_to_exit.inv_deg
-            arc_angle_2 = (o_to_center - 4).inv_deg
-        else:
-            arc_angle_2 = o_center_to_exit.inv_deg
-            arc_angle_1 = (o_to_center - 4).inv_deg
+        arc_angle_1 = o_center_to_exit.inv_deg
+        arc_angle_2 = (o_to_center - 4).inv_deg
+        if arc_angle_change <= 0:
+            arc_angle_2, arc_angle_1 = arc_angle_1, arc_angle_2
         self.render_manifold = [(arc_center[0] - curve_radius, arc_center[1] - curve_radius,
                                  arc_center[0] + curve_radius, arc_center[1] + curve_radius),
                                 arc_angle_1, arc_angle_2]
