@@ -5,6 +5,9 @@ import time
 from manager_lib import ArtAssistant as AA
 import ImageGen as IG
 
+from parameters.StyleGuides import complete_style_guide as csg
+from options import prime as opt
+
 
 class ArtDirector:
     def __init__(self):
@@ -28,6 +31,12 @@ class ArtDirector:
         else:
             print(f"{art_order['num_pieces']} pieces ordered, {len(self.art_order['RList'])} piece commands found")
             print(f"Successfully validated total piece count.\n")
+        print(f"Validating options and CSG file...")
+        if art_order['city'] != csg.csg_file_name or art_order['city'] != opt.options_file_name:
+            raise ValueError("Wrong option and/or CSG file cold-swapped")
+        else:
+            print(f"Options and CSG files successfully validated!\n")
+        print(f"Generating {csg.x}x{csg.y} output imags, from a {csg.xs}x{csg.ys} super-samplers\n")
 
     def create_gallery_structure(self):
         batch_value_txt = open("options/value_counters/batch_value", 'r')
@@ -48,11 +57,11 @@ class ArtDirector:
         print(f"Starting generation for {self.art_order['City']}:")
         for art_type in self.art_order["RList"]:
             time_start = time.perf_counter()
-            ig = IG.ImageGen(city=self.art_order['City'], art_type=art_type)
+            ig = IG.ImageGen(city=self.art_order['City'], art_style=art_type)
             image, metadata = ig.ex_nihilo_res()
             self.metadata += [metadata, num]
             image.save(f"Scratch/{num}.png")
-            image.save(f"Gallery/Batch_{self.batch_value:03d}/All/{num}.png")
+            image.save(f"Gallery/Batch_{self.batch_value:03d}/All/{num}_{art_type}.png")
             image.save(f"Gallery/Batch_{self.batch_value:03d}/{art_type}/{num}.png")
             time_end = time.perf_counter()
 
@@ -78,7 +87,7 @@ class ArtDirector:
         scratch_value_txt.close()
 
         print(f"Bypassing probability generation and file structure, generating one {art_type} of {city}:")
-        ig = IG.ImageGen(city=city, art_type=art_type)
+        ig = IG.ImageGen(city=city, art_style=art_type)
         image, metadata = ig.ex_nihilo_res()
         image.show() # REMOVE THIS LATER
         image.save(f"Gallery/Hotdogs/MetroTopology_{scratch_value}_{city}_{art_type}.png")

@@ -1,16 +1,17 @@
 import PIL
 from PIL import Image
 
-import CompleteStyleGuide
 import CompleteMaterializer
+
+from parameters.StyleGuides import complete_style_guide as csg
+
 
 
 class ImageGen:
-    def __init__(self, city, art_type):
+    def __init__(self, city, art_style):
         self.city = city
-        self.art_type = art_type
-        self.csg = CompleteStyleGuide.CompleteStyleGuide(city)
-        self.cm = CompleteMaterializer.CompleteMaterializer(city, self.csg)
+        self.art_style = art_style
+        self.cm = CompleteMaterializer.CompleteMaterializer(city, art_style)
 
         # NONE ASSIGNS FOR LATER
         self.MAP_topological = None
@@ -25,9 +26,9 @@ class ImageGen:
         self.post_process()
 
     def background(self):
-        background_name = self.csg.art_style_guide[self.art_type]['background']
-        self.background_color = self.csg.palette_style_guide[background_name]
-        self.IMG_background = PIL.Image.new('RGBA', (self.csg.xs, self.csg.ys), self.background_color)
+        background_name = csg.art_style_guide[self.art_style]['background']
+        self.background_color = csg.palette_style_guide[background_name]
+        self.IMG_background = PIL.Image.new('RGBA', (csg.xs, csg.ys), self.background_color)
 
     def generate(self):
         self.cm.generator.generate()
@@ -39,7 +40,7 @@ class ImageGen:
 
     def post_process(self):
         self.IMG_background.paste(self.IMG_render, mask=self.IMG_render)
-        self.IMG_final = self.IMG_background
+        self.IMG_final = self.IMG_background.resize((csg.x, csg.y), resample=PIL.Image.ANTIALIAS)
 
     def ex_nihilo_res(self):
         return self.IMG_final, {"REPLACE": "THIS WITH THE ACTUAL METADATA"}

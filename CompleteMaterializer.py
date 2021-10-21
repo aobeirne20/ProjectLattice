@@ -3,7 +3,7 @@ from London.render_lib import R1_London
 
 
 class CompleteMaterializer:
-    def __init__(self, city, csg):
+    def __init__(self, city, art_style):
         if city == 'London':
-            self.generator = G1_London.Generator(csg)
-            self.renderer = R1_London.Renderer(csg)
+            self.generator = G1_London.Generator()
+            self.renderer = R1_London.Renderer(art_style=art_style)

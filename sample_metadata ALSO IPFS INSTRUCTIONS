@@ -11,12 +11,12 @@
             "value": "White"
         },
         {
-            "trait_type": "Features",
-            "value": "Airport, River Bus, Rail Stations, Step-Free"
+            "trait_type": "Feature",
+            "value": "Airport"
         }
         {
             "trait_type": "Features",
-            "value": "Airport, River Bus, Rail Stations, Step-Free"
+            "value": "River Bus"
         }
         {
             "display_type": "number",
@@ -27,6 +27,11 @@
             "display_type": "number",
             "trait_type": "No. Interchanges",
             "value": 20
+        }
+        {
+            "display_type": "number",
+            "trait_type": "Track Total Mileage",
+            "value": 3500
         }
 
 
