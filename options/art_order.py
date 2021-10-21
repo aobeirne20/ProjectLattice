@@ -1,6 +1,6 @@
 art_order = {
      "city": "London",
-     "num_pieces": 20,
+     "num_pieces": 2000,
      "art_types_n": {
                      "Anti-color": 1,
                      "Night": 1,
