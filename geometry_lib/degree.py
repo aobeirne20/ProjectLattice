@@ -45,8 +45,9 @@ class degree(int):
 
     @property
     def change_to_0(self):
-        move = -1*int(self)
-        return 8 + move if move < -4 else move
+        return min(int(self), 8 - int(self))
+        # move = -1*int(self)
+        # return 8 + move if move < -4 else move
 
     def vx(self, distance: int):
         return self.ux * distance
