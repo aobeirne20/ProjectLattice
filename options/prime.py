@@ -10,8 +10,8 @@ lb_flat = [200, 1000]
 lb_other = [200, 400]
 p_river_change_n90_n45_45_90 = [0.35, 0.15, 0.15, 0.35]
 cr_river = 50
-river_inner_width = 20
-river_outer_width = 26
+river_inner_width = 26
+river_outer_width = 30
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25

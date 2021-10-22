@@ -13,7 +13,7 @@ o_to_anchor = {0: 'lm', 1: 'la', 2: 'ma', 3: 'ra', 4: 'rm', 5: 'rd', 6: 'md', 7:
 o_to_align = {0: 'left', 1: 'left', 2: 'center', 3: 'right', 4: 'right', 5: 'right', 6: 'center', 7: 'left'}
 
 
-class TextBBox(Geometry):
+class TextBox(Geometry):
     def __init__(self, spatial_station: Spatial, text: str, offset: int, font_name: str, font_size: int):
         super().__init__()
         self.spatial_station = spatial_station
@@ -27,6 +27,11 @@ class TextBBox(Geometry):
         font = ImageFont.truetype(font=font_name, size=font_size)
         pseudo_draw = ImageDraw.Draw(Image.new('RGBA', (csg.xs, csg.ys), color=(0, 0, 0, 0)))
         bbox = pseudo_draw.multiline_textbbox(self.spatial_anchor.t, text, font=font, anchor=anchor, align=align)
+
+        if self.spatial_anchor.o == 0 or self.spatial_anchor.o == 4:
+            y_new_center = np.average([bbox[1], bbox[3]])
+            y_adjustment = self.spatial_anchor.y - y_new_center
+            self.spatial_anchor = Spatial(x=self.spatial_anchor.x, y=self.spatial_anchor.y + y_adjustment, o=self.spatial_anchor.o)
 
         self.render_manifold = TextRenderManifold(text=text, xy=self.spatial_anchor.t, font=font, anchor=anchor, align=align)
 

@@ -7,8 +7,11 @@ class Generator:
         self.map = TMap()
 
     def generate(self):
+        # RIVER
         river = gRiver.gRiver()
         self.map.feature_list.append(river)
+
+        # LINES: SECANTS
 
     def return_map(self):
         return self.map

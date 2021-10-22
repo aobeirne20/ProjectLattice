@@ -4,6 +4,7 @@ from map_lib import Feature
 from geometry_lib.Spatial import Spatial
 from geometry_lib.degree import degree
 from geometry_lib.TrackGeometry import Straight, Arc
+from geometry_lib.SpecialGeometry import TextBox
 
 from options import prime as opt
 from parameters.StyleGuides import complete_style_guide as csg
@@ -16,8 +17,25 @@ def gRiver():
     starting_ys = np.random.randint(int(csg.ys * opt.b_river_ys[0]), int(csg.ys * opt.b_river_ys[1]))
     starting_location = Spatial(x=0, y=starting_ys, o=degree(0))
 
+    # Generate the river
     error, completed_piece_list = river_step(piece_list=[], current_location=starting_location, csg=csg)
     river.render_list = completed_piece_list
+
+    # Apply text label
+    possible_segments = []
+    for seg in river.render_list:
+        if type(seg) == Straight and seg.spatial1.o == 0:
+            possible_segments.append(seg)
+    possible_segments.pop() # Because the last segment can hang off the map, don't place text in it ever
+    chosen_segment = np.random.choice(possible_segments)
+    chosen_position = np.random.randint(10, 70) / 100
+    seg_distance = chosen_segment.spatial2.x - chosen_segment.spatial1.x
+    text_location = Spatial(x=chosen_segment.spatial1.x + seg_distance*chosen_position, y=chosen_segment.spatial1.y, o=degree(0))
+
+
+
+    text_box = TextBox(spatial_station=text_location, text="River Thames", offset=0, font_name="fonts/ITC - JohnstonITCPro-Medium.otf", font_size=26)
+    river.label_list.append(text_box)
 
     return river
 
@@ -39,8 +57,12 @@ def river_step(piece_list, current_location: Spatial, csg):
 
         # If the package is off the right end of the map
         if next_segment.spatial2.x > csg.xs:
-            piece_list.append(next_segment)
-            return None, piece_list
+            if next_segment.spatial2.o == 0:
+                piece_list.append(next_segment)
+                return None, piece_list
+            else:
+                attempts -= 1
+                continue
 
         if next_curve.spatial2.y > csg.ys * opt.b_river_ys[1] or \
                 next_curve.spatial2.y < csg.ys * opt.b_river_ys[0] or \

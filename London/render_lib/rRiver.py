@@ -1,4 +1,5 @@
 import aggdraw
+from PIL import ImageDraw
 
 from map_lib.TMap import TMap
 from color_lib.ColorOps import invert_color, greyscale_color
@@ -9,6 +10,7 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 def rRiver(tmap: TMap, IMG, art_style):
     draw = aggdraw.Draw(IMG)
+
     draw.setantialias(False)
 
     asg = csg.art_style_guide[art_style]
@@ -48,4 +50,11 @@ def rRiver(tmap: TMap, IMG, art_style):
             thing.execute_render(draw, inner_pen)
 
     draw.flush()
+    idraw = ImageDraw.Draw(IMG)
+
+    for feature in tmap.feature_list:
+        for label in feature.label_list:
+            label.execute_render(idraw, border_color)
+
+
     return IMG
