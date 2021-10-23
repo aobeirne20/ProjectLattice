@@ -48,6 +48,17 @@ class degree(int):
         move = -1*int(self)
         return 8 + move if move < -4 else move
 
+    def change_to(self, target):
+        one_way = int(target) - int(self)
+        if one_way > 0:
+            other_way = one_way - 8
+        else:
+            other_way = one_way + 8
+        if abs(one_way) < abs(other_way):
+            return one_way
+        else:
+            return other_way
+
     def vx(self, distance: int):
         return self.ux * distance
 

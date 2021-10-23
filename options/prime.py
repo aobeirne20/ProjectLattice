@@ -9,9 +9,28 @@ b_river_ys = [0.6, 0.9]
 lb_flat = [200, 1000]
 lb_other = [200, 400]
 p_river_change_n90_n45_45_90 = [0.35, 0.15, 0.15, 0.35]
-cr_river = 50
+cr_river = 30
 river_inner_width = 26
 river_outer_width = 30
+river_label_font_size = 20
+
+# SECANT OPTIONS ----------------------------------------------------------------------------------------
+secant_starting_bounds_x = [0.35, 0.65]
+secant_starting_bounds_y = [0.45, 0.55]
+
+p_secant_pick_o_from_not_used_list = [0.5, 0.5]
+p_secant_start_off_trend = [0.02, 0.08, 0.2, 0.4, 0.2, 0.08, 0.02]
+
+b_secant_segment_length = [50, 1200]
+secant_dist_params = [625, 350]
+
+p_secant_on_trend_by = [0.1, 0.4, 0.4, 0.1]
+
+p_secant_return_to_trend = [0.8, 0.2]
+p_secant_off_trend_return_by = [0.2, 0.8]
+
+cr_line = 18
+
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25
@@ -36,3 +55,9 @@ lb_other = [n * s for n in lb_other]
 cr_river *= s
 river_inner_width *= s
 river_outer_width *= s
+river_label_font_size *= s
+
+b_secant_segment_length = [n * s for n in b_secant_segment_length]
+secant_dist_params = [n * s for n in secant_dist_params]
+
+cr_line *= s

@@ -2,6 +2,7 @@ line_style_guide = {
     "Emirates Air": {
         "name": "Emirates Air",
         "color": (220, 36, 31, 255),
+        "gen_order": 6,
         "gen_type": "shuttle",
         "station_type": "shuttle",
         "line_type": "triple",
@@ -10,6 +11,7 @@ line_style_guide = {
     "DLR": {
         "name": "DLR",
         "color": (0, 175, 173, 255),
+        "gen_order": 4,
         "gen_type": "light",
         "station_type": "light",
         "line_type": "double",
@@ -18,6 +20,7 @@ line_style_guide = {
     "Overground": {
         "name": "Overground",
         "color": (239, 123, 16, 255),
+        "gen_order": 3,
         "gen_type": "heavy",
         "station_type": "heavy",
         "line_type": "double",
@@ -26,6 +29,7 @@ line_style_guide = {
     "London Tram": {
         "name": "London Tram",
         "color": (0, 189, 25, 255),
+        "gen_order": 4,
         "gen_type": "tram",
         "station_type": "light",
         "line_type": "double",
@@ -34,6 +38,7 @@ line_style_guide = {
     "Elizabeth": {
         "name": "Elizabeth",
         "color": (147, 100, 204, 255),
+        "gen_order": 5,
         "gen_type": "secant",
         "station_type": "crossrail",
         "line_type": "double",
@@ -42,6 +47,7 @@ line_style_guide = {
     "Bakerloo": {
         "name": "Bakerlooo",
         "color": (178, 99, 0, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -49,6 +55,7 @@ line_style_guide = {
     "Central": {
         "name": "Central",
         "color": (220, 36, 31, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -56,6 +63,7 @@ line_style_guide = {
     "Circle": {
         "name": "Circle",
         "color": (255, 211, 41, 255),
+        "gen_order": 1,
         "gen_type": "circle",
         "station_type": "underground",
         "line_type": "single",
@@ -63,6 +71,7 @@ line_style_guide = {
     "District": {
         "name": "District",
         "color": (0, 125, 50, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -70,6 +79,7 @@ line_style_guide = {
     "H'Smith & City": {
         "name": "H'Smith & City",
         "color": (244, 169, 190, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -77,6 +87,7 @@ line_style_guide = {
     "Jubilee": {
         "name": "Jubilee",
         "color": (161, 165, 167, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -84,6 +95,7 @@ line_style_guide = {
     "Metropolitan": {
         "name": "Metropolitan",
         "color": (155, 0, 88, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -91,6 +103,7 @@ line_style_guide = {
     "Northern": {
         "name": "Northern",
         "color": (0, 0, 0, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -98,6 +111,7 @@ line_style_guide = {
     "Picadilly": {
         "name": "Picadilly",
         "color": (0, 25, 168, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -105,6 +119,7 @@ line_style_guide = {
     "Victoria": {
         "name": "Victoria",
         "color": (0, 152, 216, 255),
+        "gen_order": 1,
         "gen_type": "secant",
         "station_type": "underground",
         "line_type": "single",
@@ -112,6 +127,7 @@ line_style_guide = {
     "Waterloo & City": {
         "name": "Waterlooo & City",
         "color": (147, 206, 186, 255),
+        "gen_order": 2,
         "gen_type": "shuttle",
         "station_type": "underground",
         "line_type": "single",

@@ -1,5 +1,9 @@
+import numpy as np
+
 from map_lib.TMap import TMap
-from London.generate_lib import gRiver
+from London.generate_lib import gRiver, gLineSecant
+
+from parameters.StyleGuides import complete_style_guide as csg
 
 
 class Generator:
@@ -11,7 +15,23 @@ class Generator:
         river = gRiver.gRiver()
         self.map.feature_list.append(river)
 
-        # LINES: SECANTS
+        # LINE PRE-PROCESSING
+        gen_cycles = 0
+        gen_list = []
+        for line in csg.line_style_guide.values():
+            gen_cycles = max(gen_cycles, line['gen_order'])
+        for cycle in range(0, gen_cycles+1):
+            gen_list.append([])
+        for line in csg.line_style_guide.values():
+            gen_list[line['gen_order']].append(line)
+
+        for cycle in gen_list:
+            np.random.shuffle(cycle)
+            for line in cycle:
+                if line['gen_type'] == 'secant':
+                    self.map.line_list.append(gLineSecant.gLineSecant(self.map, line))
+
+
 
     def return_map(self):
         return self.map

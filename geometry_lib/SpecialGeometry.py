@@ -1,4 +1,4 @@
-from shapely.geometry import Point, LineString, LinearRing
+from shapely.geometry import box
 import aggdraw
 import numpy as np
 from PIL import ImageDraw, ImageFont, Image
@@ -32,6 +32,8 @@ class TextBox(Geometry):
             y_new_center = np.average([bbox[1], bbox[3]])
             y_adjustment = self.spatial_anchor.y - y_new_center
             self.spatial_anchor = Spatial(x=self.spatial_anchor.x, y=self.spatial_anchor.y + y_adjustment, o=self.spatial_anchor.o)
+
+        self.logic_manifold = box(minx=min(bbox[0], bbox[2]), miny=min(bbox[1], bbox[3]), maxx=max(bbox[0], bbox[2]), maxy=max(bbox[1], bbox[3]))
 
         self.render_manifold = TextRenderManifold(text=text, xy=self.spatial_anchor.t, font=font, anchor=anchor, align=align)
 

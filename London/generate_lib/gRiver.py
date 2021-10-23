@@ -24,17 +24,15 @@ def gRiver():
     # Apply text label
     possible_segments = []
     for seg in river.render_list:
-        if type(seg) == Straight and seg.spatial1.o == 0:
+        if type(seg) == Straight and seg.spatial1.o == 0 and seg.spatial2.x - seg.spatial1.x > 400 * opt.s:
             possible_segments.append(seg)
     possible_segments.pop() # Because the last segment can hang off the map, don't place text in it ever
     chosen_segment = np.random.choice(possible_segments)
-    chosen_position = np.random.randint(10, 70) / 100
-    seg_distance = chosen_segment.spatial2.x - chosen_segment.spatial1.x
-    text_location = Spatial(x=chosen_segment.spatial1.x + seg_distance*chosen_position, y=chosen_segment.spatial1.y, o=degree(0))
+    chosen_position_x = np.random.randint(int(chosen_segment.spatial1.x) + 100 * opt.s, int(chosen_segment.spatial2.x) - 300 * opt.s)
+    text_location = Spatial(x=chosen_position_x, y=chosen_segment.spatial1.y, o=degree(0))
 
-
-
-    text_box = TextBox(spatial_station=text_location, text="River Thames", offset=0, font_name="fonts/ITC - JohnstonITCPro-Medium.otf", font_size=26)
+    text_box = TextBox(spatial_station=text_location, text="River Thames", offset=0,
+                       font_name="fonts/ITC - JohnstonITCPro-Medium.otf", font_size=opt.river_label_font_size)
     river.label_list.append(text_box)
 
     return river
@@ -44,7 +42,9 @@ def river_step(piece_list, current_location: Spatial, csg):
     attempts = 100
     while attempts > 0:
         # Generate a package
-        if current_location.o == 0:
+        if current_location.x == 0:
+            next_length = np.random.randint(opt.lb_flat[0] + 300, opt.lb_flat[1])
+        elif current_location.o == 0:
             next_length = np.random.randint(opt.lb_flat[0], opt.lb_flat[1])
         else:
             next_length = np.random.randint(opt.lb_other[0], opt.lb_other[1])
