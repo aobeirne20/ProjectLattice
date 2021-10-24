@@ -9,7 +9,7 @@ palette_style_guide = {
 
     "detail_blue": (28, 63, 149, 255),
 
-    "gold_start": (),
-    "gold_stop": ()
+    "gold_start": (255, 223, 0, 255),
+    "gold_stop": (153, 101, 21, 255)
 }
 

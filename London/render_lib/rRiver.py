@@ -2,59 +2,54 @@ import aggdraw
 from PIL import ImageDraw
 
 from map_lib.TMap import TMap
-from color_lib.ColorOps import invert_color, greyscale_color
+from color_lib.ColorOps import invert_color, greyscale_color, goldshade_color
 
 from options import prime as opt
 from parameters.StyleGuides import complete_style_guide as csg
 
 
-def rRiver(tmap: TMap, IMG, art_style):
+def rRiver(tmap: TMap, river, IMG, art_style):
     draw = aggdraw.Draw(IMG)
-
     draw.setantialias(False)
 
     asg = csg.art_style_guide[art_style]
+    asg_r = asg['river']
     fill_color = csg.palette_style_guide['river_fill']
     border_color = csg.palette_style_guide['river_border']
     inner_width = opt.river_inner_width
     outer_width = opt.river_outer_width
 
-    if asg['river'] == 'normal':
-        pass
-    elif asg['river'] == 'inverted greyscale':
+    if asg_r == 'greyscale' or asg_r == 'inverted greyscale':
         fill_color = greyscale_color(fill_color)
         border_color = greyscale_color(border_color)
+
+    if asg_r == 'gold' or asg_r == 'inverted gold':
+        fill_color = goldshade_color(fill_color)
+        border_color = goldshade_color(border_color)
+
+    if asg_r == 'inverted' or asg_r == 'inverted gold' or asg_r == 'inverted greyscale':
         fill_color = invert_color(fill_color)
         border_color = invert_color(border_color)
+        # IMPORTANT BORDER FILL SWITCH ONLY FOR RIVER
+        fill_color, border_color = border_color, fill_color
 
-
-    elif asg['river'] == 'inverted':
-        fill_color = invert_color(fill_color)
-        border_color = invert_color(border_color)
-
-
-    elif asg['river'] == 'gold':
-        pass
-    elif asg['river'] == 'inverted gold':
-        fill_color = invert_color(fill_color)
-        border_color = invert_color(border_color)
+    # SECOND PART OF THE SWITCH
+    if asg['background'] == 'black':
+        fill_color, border_color = border_color, fill_color
 
 
     outer_pen = aggdraw.Pen(border_color, outer_width)
     inner_pen = aggdraw.Pen(fill_color, inner_width)
 
-    for feature in tmap.feature_list:
-        for thing in feature.render_list:
-            thing.execute_render(draw, outer_pen)
-        for thing in feature.render_list:
-            thing.execute_render(draw, inner_pen)
+    for piece in river.render_list:
+        piece.execute_render(draw, outer_pen)
+    for piece in river.render_list:
+        piece.execute_render(draw, inner_pen)
 
     draw.flush()
     idraw = ImageDraw.Draw(IMG)
 
-    for feature in tmap.feature_list:
-        for label in feature.label_list:
-            label.execute_render(idraw, border_color)
-
+    for label in river.label_list:
+        label.execute_render(idraw, border_color)
 
     return IMG

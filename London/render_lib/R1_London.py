@@ -1,6 +1,7 @@
 import PIL
 
 from London.render_lib.rRiver import rRiver
+from London.render_lib.rLine import rLine
 
 from parameters.StyleGuides import complete_style_guide as csg
 
@@ -11,7 +12,12 @@ class Renderer:
         self.art_style = art_style
 
     def render(self, tmap):
-        self.IMG = rRiver(tmap, self.IMG, self.art_style)
+        for thing in tmap.feature_list:
+            if thing.feature_type_name == 'River':
+                self.IMG = rRiver(tmap, thing, self.IMG, self.art_style)
+
+        for line in tmap.line_list:
+            self.IMG = rLine(tmap, line, self.IMG, self.art_style)
 
     def return_img(self):
         return self.IMG

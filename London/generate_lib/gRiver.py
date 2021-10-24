@@ -11,7 +11,7 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 
 def gRiver():
-    river = Feature.Feature()
+    river = Feature.Feature('River')
 
     # Pick river starting location
     starting_ys = np.random.randint(int(csg.ys * opt.b_river_ys[0]), int(csg.ys * opt.b_river_ys[1]))

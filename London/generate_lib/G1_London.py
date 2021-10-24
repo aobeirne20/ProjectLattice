@@ -1,7 +1,8 @@
 import numpy as np
 
 from map_lib.TMap import TMap
-from London.generate_lib import gRiver, gLineSecant
+from London.generate_lib import gRiver
+from London.generate_lib.line import gLineSecant
 
 from parameters.StyleGuides import complete_style_guide as csg
 
@@ -30,7 +31,6 @@ class Generator:
             for line in cycle:
                 if line['gen_type'] == 'secant':
                     self.map.line_list.append(gLineSecant.gLineSecant(self.map, line))
-
 
 
     def return_map(self):

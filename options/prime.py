@@ -18,11 +18,11 @@ river_label_font_size = 20
 secant_starting_bounds_x = [0.35, 0.65]
 secant_starting_bounds_y = [0.45, 0.55]
 
-p_secant_pick_o_from_not_used_list = [0.5, 0.5]
+p_secant_pick_o_from_not_used_list = [0.8, 0.2]
 p_secant_start_off_trend = [0.02, 0.08, 0.2, 0.4, 0.2, 0.08, 0.02]
 
 b_secant_segment_length = [50, 1200]
-secant_dist_params = [625, 350]
+secant_dist_params = [400, 350]
 
 p_secant_on_trend_by = [0.1, 0.4, 0.4, 0.1]
 
@@ -31,13 +31,16 @@ p_secant_off_trend_return_by = [0.2, 0.8]
 
 cr_line = 18
 
+single_line_width = 6
+double_line_inner_width = 3
+
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25
 
 # IMAGE OPTIONS ----------------------------------------------------------------------------------------
-s_antialiasing = 2
-s_outputimage = 1
+s_antialiasing = 3
+s_outputimage = 2
 
 # PINATA OPTIONS ---------------------------------------------------------------------------------------
 pinata_public_key = "314b41ace95e24c21572"
@@ -61,3 +64,6 @@ b_secant_segment_length = [n * s for n in b_secant_segment_length]
 secant_dist_params = [n * s for n in secant_dist_params]
 
 cr_line *= s
+
+single_line_width *= s
+double_line_inner_width *= s
