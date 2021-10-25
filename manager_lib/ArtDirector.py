@@ -36,7 +36,7 @@ class ArtDirector:
             raise ValueError("Wrong option and/or CSG file cold-swapped")
         else:
             print(f"Options and CSG files successfully validated!\n")
-        print(f"Generating {csg.x}x{csg.y} output imags, from a {csg.xs}x{csg.ys} super-samplers\n")
+        print(f"Generating {csg.x}x{csg.y} output images(s), from a {csg.xs}x{csg.ys} super-sampler\n")
 
     def create_gallery_structure(self):
         batch_value_txt = open("options/value_counters/batch_value", 'r')

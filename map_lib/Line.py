@@ -10,6 +10,9 @@ class Line():
     def add_branch(self, segment_list, station_list, interchange_list):
         self.branches.append(Branch(segment_list, station_list, interchange_list))
 
+    def flip(self):
+        self.origin_spatial, self.flip_spatial, self.trend, self.flip_trend = self.flip_spatial, self.origin_spatial, self.flip_trend, self.trend
+
 
 class Branch():
     def __init__(self, segment_list, station_list, interchange_list):

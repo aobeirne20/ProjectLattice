@@ -42,7 +42,7 @@ def length_normal_dist():
     length = 0
     while not opt.b_secant_segment_length[0] < length < opt.b_secant_segment_length[1]:
         length = np.random.normal(loc=opt.secant_dist_params[0], scale=opt.secant_dist_params[1])
-    return int(length)
+    return int(length * opt.s)
 
 
 def curve_change_choice(this_line, current_spatial):
@@ -62,3 +62,6 @@ def curve_change_choice(this_line, current_spatial):
         else:
             arc_change = np.random.choice([-2, -1, 1, 2], p=opt.p_secant_on_trend_by)
     return arc_change
+
+def buffer_unload(tmap, this_line, line_buffer, station_buffer, interchange_buffer):
+    this_line.add_branch(line_buffer, station_buffer, interchange_buffer)
