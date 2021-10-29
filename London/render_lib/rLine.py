@@ -23,14 +23,14 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     white_mid_pen = aggdraw.Pen(csg.palette_style_guide['white'], opt.double_line_inner_width)
 
     for branch in line.branches:
-        for piece in branch.segment_list:
-            piece.execute_render(draw, line_pen)
-            piece.execute_render(draw, line_outline)
+        for frame in branch.frame_buffer:
+            frame.geometry.execute_render(draw, line_pen)
+            frame.geometry.execute_render(draw, line_outline)
 
     if lsg['line_type'] == 'double':
         for branch in line.branches:
-            for piece in branch.segment_list:
-                piece.execute_render(draw, white_mid_pen)
+            for frame in branch.frame_buffer:
+                frame.geometry.execute_render(draw, white_mid_pen)
 
 
 

@@ -50,7 +50,7 @@ def river_step(piece_list, current_location: Spatial, csg):
             next_length = np.random.randint(opt.lb_other[0], opt.lb_other[1])
         next_segment = Straight(spatial1=current_location, distance=next_length)
         if current_location.o == 0:
-            next_dir_change = np.random.choice([-2, -1, 1, 2], p=opt.p_river_change_n90_n45_45_90)
+            next_dir_change = np.random.choice(opt.v_river_change, p=opt.p_river_change)
         else:
             next_dir_change = next_segment.spatial2.o.change_to_0
         next_curve = Arc(spatial1=next_segment.spatial2, arc_angle_change=next_dir_change, curve_radius=opt.cr_river)

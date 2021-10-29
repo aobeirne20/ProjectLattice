@@ -8,7 +8,7 @@ options_file_name = "London"
 b_river_ys = [0.6, 0.9]
 lb_flat = [200, 1000]
 lb_other = [200, 400]
-p_river_change_n90_n45_45_90 = [0.35, 0.15, 0.15, 0.35]
+v_river_change, p_river_change = [-2, -1, 1, 2], [0.35, 0.15, 0.15, 0.35]
 cr_river = 30
 river_inner_width = 26
 river_outer_width = 30
@@ -18,16 +18,19 @@ river_label_font_size = 20
 secant_starting_bounds_x = [0.35, 0.65]
 secant_starting_bounds_y = [0.45, 0.55]
 
-p_secant_pick_o_from_not_used_list = [0.8, 0.2]
-p_secant_start_off_trend = [0.02, 0.08, 0.2, 0.4, 0.2, 0.08, 0.02]
+v_secant_pick_o_from_not_used_list, p_secant_pick_o_from_not_used_list = [True, False], [0.8, 0.2]
+v_secant_start_off_trend, p_secant_start_off_trend = [-2, -1, 0, 1, 2], [0.05, 0.2, 0.5, 0.2, 0.05]
 
 b_secant_segment_length = [50, 1200]
-secant_dist_params = [400, 350]
+std_secant_segment_length = [400, 350]
 
-p_secant_on_trend_by = [0.05, 0.45, 0.45, 0.05]
+v_secant_on_trend_diverge_by, p_secant_on_trend_diverge_by = [-2, -1, 1, 2], [0.02, 0.48, 0.48, 0.02]
 
-p_secant_return_to_trend = [0.5, 0.5]
-p_secant_off_trend_return_by = [0.05, 0.95]
+p_secant_return_to_trend_off_by_1 = [0.5, 0.5]
+p_secant_return_to_trend_off_by_2 = [0.75, 0.25]
+p_secant_return_to_trend_off_by_3 = [1, 0]
+
+p_secant_off_trend_return_by = [0.04, 0.96]
 
 cr_line = 18
 

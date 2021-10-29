@@ -7,15 +7,16 @@ class Line():
         self.branches = []
         self.style_details = style_details
 
-    def add_branch(self, segment_list, station_list, interchange_list):
-        self.branches.append(Branch(segment_list, station_list, interchange_list))
+    def add_branch(self, frame_buffer):
+        self.branches.append(Branch(frame_buffer))
 
-    def flip(self):
+    def flip_for_anti_branch(self):
         self.origin_spatial, self.flip_spatial, self.trend, self.flip_trend = self.flip_spatial, self.origin_spatial, self.flip_trend, self.trend
 
 
 class Branch():
-    def __init__(self, segment_list, station_list, interchange_list):
-        self.segment_list = segment_list
-        self.station_list = station_list
-        self.interchange_list = interchange_list
+    def __init__(self, frame_buffer):
+        self.frame_buffer = frame_buffer
+        self.segment_list = None
+        self.station_list = None
+        self.interchange_list = None
