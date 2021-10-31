@@ -10,8 +10,11 @@ class Line():
     def add_branch(self, frame_buffer):
         self.branches.append(Branch(frame_buffer))
 
-    def flip_for_anti_branch(self):
-        self.origin_spatial, self.flip_spatial, self.trend, self.flip_trend = self.flip_spatial, self.origin_spatial, self.flip_trend, self.trend
+    def form_origin_branch(self):
+        pass
+
+    def form_anti_branch(self):
+        pass
 
 
 class Branch():

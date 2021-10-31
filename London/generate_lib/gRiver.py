@@ -43,7 +43,7 @@ def river_step(piece_list, current_location: Spatial, csg):
     while attempts > 0:
         # Generate a package
         if current_location.x == 0:
-            next_length = np.random.randint(opt.lb_flat[0] + 300, opt.lb_flat[1])
+            next_length = np.random.randint(opt.lb_flat[0] + 200*opt.s, opt.lb_flat[1])
         elif current_location.o == 0:
             next_length = np.random.randint(opt.lb_flat[0], opt.lb_flat[1])
         else:

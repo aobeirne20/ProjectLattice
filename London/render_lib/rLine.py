@@ -19,18 +19,25 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     line_pen = aggdraw.Pen(line_color, opt.single_line_width)
     r, g, b, a = line_color
     # SOft transparent outline. Keep?
-    line_outline = aggdraw.Pen((r, g, b, 200), opt.single_line_width+(2*opt.s))
+    #line_outline = aggdraw.Pen((r, g, b, 200), opt.single_line_width+(2*opt.s))
     white_mid_pen = aggdraw.Pen(csg.palette_style_guide['white'], opt.double_line_inner_width)
 
     for branch in line.branches:
         for frame in branch.frame_buffer:
-            frame.geometry.execute_render(draw, line_pen)
-            frame.geometry.execute_render(draw, line_outline)
+            for station in frame.stations:
+                station.execute_render(draw, line_pen)
+
+    for branch in line.branches:
+        for frame in branch.frame_buffer:
+            if frame.geometry is not None:
+                frame.geometry.execute_render(draw, line_pen)
+                #frame.geometry.execute_render(draw, line_outline)
 
     if lsg['line_type'] == 'double':
         for branch in line.branches:
             for frame in branch.frame_buffer:
-                frame.geometry.execute_render(draw, white_mid_pen)
+                if frame.geometry is not None:
+                    frame.geometry.execute_render(draw, white_mid_pen)
 
 
 

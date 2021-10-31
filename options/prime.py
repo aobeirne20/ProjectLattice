@@ -15,7 +15,7 @@ river_outer_width = 30
 river_label_font_size = 20
 
 # SECANT OPTIONS ----------------------------------------------------------------------------------------
-secant_starting_bounds_x = [0.35, 0.65]
+secant_starting_bounds_x = [0.30, 0.70]
 secant_starting_bounds_y = [0.45, 0.55]
 
 v_secant_pick_o_from_not_used_list, p_secant_pick_o_from_not_used_list = [True, False], [0.8, 0.2]
@@ -37,12 +37,16 @@ cr_line = 18
 single_line_width = 6
 double_line_inner_width = 3
 
+b_map = [0.05, 0.95]
+
+# STATION OPTIONS --------------------------------------------------------------------------------------
+tick_length = 8
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25
 
 # IMAGE OPTIONS ----------------------------------------------------------------------------------------
-s_antialiasing = 2
+s_antialiasing = 1
 s_outputimage = 1
 
 # PINATA OPTIONS ---------------------------------------------------------------------------------------
@@ -69,3 +73,5 @@ cr_line *= s
 
 single_line_width *= s
 double_line_inner_width *= s
+
+tick_length *= s

@@ -73,8 +73,14 @@ def curve_change_choice(this_line, current_spatial):
             else:
                 arc_change = np.random.choice(opt.v_secant_on_trend_diverge_by, p=opt.p_secant_on_trend_diverge_by)
 
-        if abs(arc_change) > 1 and current_spatial.o % 2 != 0:
-            arc_change = 1 * np.sign(arc_change)
+    # No diagonal 90 changes
+    if abs(arc_change) > 1 and current_spatial.o % 2 != 0:
+        arc_change = 1 * np.sign(arc_change)
+
+    # No changes from 2 -> 4:
+    if abs(degree(current_spatial.o + arc_change).change_to(this_line.trend)) >= 4:
+        arc_change = 1 * np.sign(arc_change)
+
     return arc_change
 
 

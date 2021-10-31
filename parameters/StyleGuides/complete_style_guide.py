@@ -18,8 +18,8 @@ map_style_guide = MS1_London.map_style_guide
 name_pool = NS1_London.import_pool
 palette_style_guide = PS1_London.palette_style_guide
 
-x = map_style_guide["x_size"] * opt.s_outputimage
-y = map_style_guide["y_size"] * opt.s_outputimage
-xs = map_style_guide["x_size"] * opt.s_combined
-ys = map_style_guide["y_size"] * opt.s_combined
+x = int(map_style_guide["x_size"] * opt.s_outputimage)
+y = int(map_style_guide["y_size"] * opt.s_outputimage)
+xs = int(map_style_guide["x_size"] * opt.s_combined)
+ys = int(map_style_guide["y_size"] * opt.s_combined)
 
