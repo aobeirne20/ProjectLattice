@@ -6,6 +6,8 @@ from geometry_lib.Spatial import Spatial
 from geometry_lib.degree import degree
 from geometry_lib.Geometry import Geometry
 
+import matplotlib.pyplot as plt
+
 
 class TrackGeometry(Geometry):
     def __init__(self, spatial1):
@@ -42,7 +44,13 @@ class Arc(TrackGeometry):
 
         # BUILD THE SHAPELY PSUEDOCURVE
         numsegments = 1000
-        theta = np.linspace((o_to_center - 4).rad, o_center_to_exit.rad, numsegments)
+        t1, t2 = (o_to_center - 4).rad, o_center_to_exit.rad
+        if np.sign(arc_angle_change) == 1 and o_center_to_exit == 0:
+            t2 = 2*np.pi
+        elif (o_to_center - 4) == 0 and np.sign(arc_angle_change) == -1:
+            t1 = 2*np.pi
+
+        theta = np.linspace(t1, t2, numsegments)
         x = arc_center[0] + curve_radius * np.cos(theta)
         y = arc_center[1] + curve_radius * np.sin(theta)
         self.logic_manifold = LineString(np.column_stack([x, y]))

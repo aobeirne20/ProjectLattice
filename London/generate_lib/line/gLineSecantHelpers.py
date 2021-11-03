@@ -45,14 +45,14 @@ def length_normal_dist():
     return int(length * opt.s)
 
 
-def curve_change_choice(this_line, current_spatial):
+def curve_change_choice(current_trend, current_spatial):
     # IF ON TREND
-    if this_line.trend == current_spatial.o:
+    if current_trend == current_spatial.o:
         arc_change = np.random.choice(opt.v_secant_on_trend_diverge_by, p=opt.p_secant_on_trend_diverge_by)
 
     # IF NOT ON TREND
     else:
-        change_to_trend = current_spatial.o.change_to(this_line.trend)
+        change_to_trend = current_spatial.o.change_to(current_trend)
         if abs(change_to_trend) == 1:
             p_secant_return_to_trend = opt.p_secant_return_to_trend_off_by_1
         elif abs(change_to_trend) == 2:
@@ -78,14 +78,13 @@ def curve_change_choice(this_line, current_spatial):
         arc_change = 1 * np.sign(arc_change)
 
     # No changes from 2 -> 4:
-    if abs(degree(current_spatial.o + arc_change).change_to(this_line.trend)) >= 4:
+    if abs(degree(current_spatial.o + arc_change).change_to(current_trend)) >= 4:
         arc_change = 1 * np.sign(arc_change)
 
     return arc_change
 
 
-def buffer_unload(tmap, this_line, frame_buffer):
-    this_line.add_branch(frame_buffer)
+
 
 
 class BufferFrame:

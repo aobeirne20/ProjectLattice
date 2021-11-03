@@ -26,8 +26,8 @@ std_secant_segment_length = [400, 350]
 
 v_secant_on_trend_diverge_by, p_secant_on_trend_diverge_by = [-2, -1, 1, 2], [0.02, 0.48, 0.48, 0.02]
 
-p_secant_return_to_trend_off_by_1 = [0.5, 0.5]
-p_secant_return_to_trend_off_by_2 = [0.75, 0.25]
+p_secant_return_to_trend_off_by_1 = [0.6, 0.4]
+p_secant_return_to_trend_off_by_2 = [0.8, 0.2]
 p_secant_return_to_trend_off_by_3 = [1, 0]
 
 p_secant_off_trend_return_by = [0.04, 0.96]
@@ -36,11 +36,16 @@ cr_line = 18
 
 single_line_width = 6
 double_line_inner_width = 3
+station_tick_width = 4
 
-b_map = [0.05, 0.95]
+map_border_buffer = 200
 
 # STATION OPTIONS --------------------------------------------------------------------------------------
 tick_length = 8
+
+# INTERCHANGE OPTIONS ----------------------------------------------------------------------------------
+interchange_render_outer_radius = 9
+interchange_render_inner_radius = 6
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25
@@ -73,5 +78,11 @@ cr_line *= s
 
 single_line_width *= s
 double_line_inner_width *= s
+station_tick_width *= s
 
 tick_length *= s
+
+interchange_render_outer_radius *= s
+interchange_render_inner_radius *= s
+
+map_border_buffer *= s

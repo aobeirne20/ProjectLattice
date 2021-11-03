@@ -30,7 +30,8 @@ class Generator:
             np.random.shuffle(cycle)
             for line in cycle:
                 if line['gen_type'] == 'secant':
-                    self.map.line_list.append(gLineSecant.gLineSecant(self.map, line))
+                    gennie = gLineSecant.gLineSecant(self.map, line)
+                    self.map.line_list.append(gennie.return_line())
 
 
     def return_map(self):
