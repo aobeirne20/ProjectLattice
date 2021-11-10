@@ -2,6 +2,7 @@ import PIL
 
 from London.render_lib.rRiver import rRiver
 from London.render_lib.rLine import rLine
+from London.render_lib.rInterchange import rInterchange
 
 from parameters.StyleGuides import complete_style_guide as csg
 
@@ -18,6 +19,9 @@ class Renderer:
 
         for line in tmap.line_list:
             self.IMG = rLine(tmap, line, self.IMG, self.art_style)
+
+        for interchange in tmap.interchange_list:
+            self.IMG = rInterchange(tmap, interchange, self.IMG, self.art_style)
 
     def return_img(self):
         return self.IMG

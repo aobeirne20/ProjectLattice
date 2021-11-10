@@ -129,7 +129,7 @@ class gLineSecant():
 
 
     def line_collision_check(self, next_frame, frame_buffer, current_spatial):
-        collisions = self.tmap.collision_check(next_frame.geometry)
+        collisions = self.tmap.collision_check(next_frame.geometry, frame_buffer, self.this_line)
         inters = []
         for collision in collisions:
             interchange_spatial = Spatial(collision.x, collision.y, current_spatial.o)

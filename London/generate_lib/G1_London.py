@@ -3,6 +3,7 @@ import numpy as np
 from map_lib.TMap import TMap
 from London.generate_lib import gRiver
 from London.generate_lib.line import gLineSecant
+from London.generate_lib import interchange
 
 from parameters.StyleGuides import complete_style_guide as csg
 
@@ -32,6 +33,9 @@ class Generator:
                 if line['gen_type'] == 'secant':
                     gennie = gLineSecant.gLineSecant(self.map, line)
                     self.map.line_list.append(gennie.return_line())
+
+        self.map.combine_interchanges()
+
 
 
     def return_map(self):
