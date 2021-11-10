@@ -6,8 +6,6 @@ from geometry_lib.Spatial import Spatial
 from geometry_lib.degree import degree
 from geometry_lib.Geometry import Geometry
 
-import matplotlib.pyplot as plt
-
 
 class TrackGeometry(Geometry):
     def __init__(self, spatial1):
