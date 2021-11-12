@@ -34,7 +34,8 @@ p_secant_off_trend_return_by = [0.04, 0.96]
 
 cr_line = 18
 
-single_line_width = 6
+single_line_width = 7
+night_tube_inline_width = 5
 double_line_inner_width = 3
 station_tick_width = 4
 
@@ -57,7 +58,7 @@ s_outputimage = 1
 # PINATA OPTIONS ---------------------------------------------------------------------------------------
 pinata_public_key = "314b41ace95e24c21572"
 pinata_private_key = "e4a8b651968cf90767f5232eae853025009dc9a15512f6b53c499327df4c6e4d"
-ipfs_directory_name = "RapidTopology_London"
+ipfs_directory_name = "MetroTopology_London"
 
 # ------------------------------------------------------------------------------------------------------
 # CALCULATED OPTIONS -----------------------------------------------------------------------------------
@@ -77,6 +78,7 @@ b_secant_segment_length = [n * s for n in b_secant_segment_length]
 cr_line *= s
 
 single_line_width *= s
+night_tube_inline_width *= s
 double_line_inner_width *= s
 station_tick_width *= s
 

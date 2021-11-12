@@ -2,6 +2,7 @@ from shapely.geometry import LinearRing, Point
 
 from parameters.StyleGuides import complete_style_guide as csg
 
+
 class TMap:
     def __init__(self):
         self.line_list = []
@@ -25,35 +26,40 @@ class TMap:
                             for point in intersect:
                                 intersect_list.append(point)
                             collision_locs += intersect_list
+                        elif intersect.geom_type == 'LineString':
+                            intersect_list = []
+                            for point in intersect.boundary:
+                                intersect_list.append(point)
+                            collision_locs += intersect_list
                         else:
                             collision_locs += [intersect]
 
-        # Collision with the current buffer
-        for frame in buffer:
-            intersect = frame.geometry.logic_manifold.intersection(geometry.logic_manifold)
-            if not intersect.is_empty:
-                if frame.geometry.spatial1 != geometry.spatial1 and frame.geometry.spatial1 != geometry.spatial2 and \
-                        frame.geometry.spatial2 != geometry.spatial1 and frame.geometry.spatial2 != geometry.spatial2:
-                    if intersect.geom_type == 'MultiPoint':
-                        intersect_list = []
-                        for point in intersect:
-                            intersect_list.append(point)
-                        collision_locs += intersect_list
-                    else:
-                        collision_locs += [intersect]
-
-        # Collision with the current line THIS NEEDS TO BE FIXED
-        for buffer in line.buffers:
-            for frame in buffer.frame_buffer:
-                intersect = frame.geometry.logic_manifold.intersection(geometry.logic_manifold)
-                if not intersect.is_empty:
-                    if intersect.geom_type == 'MultiPoint':
-                        intersect_list = []
-                        for point in intersect:
-                            intersect_list.append(point)
-                        collision_locs += intersect_list
-                    else:
-                        collision_locs += [intersect]
+        # # Collision with the current buffer
+        # for frame in buffer:
+        #     intersect = frame.geometry.logic_manifold.intersection(geometry.logic_manifold)
+        #     if not intersect.is_empty:
+        #         if frame.geometry.spatial1 != geometry.spatial1 and frame.geometry.spatial1 != geometry.spatial2 and \
+        #                 frame.geometry.spatial2 != geometry.spatial1 and frame.geometry.spatial2 != geometry.spatial2:
+        #             if intersect.geom_type == 'MultiPoint':
+        #                 intersect_list = []
+        #                 for point in intersect:
+        #                     intersect_list.append(point)
+        #                 collision_locs += intersect_list
+        #             else:
+        #                 collision_locs += [intersect]
+        #
+        # # Collision with the current line THIS NEEDS TO BE FIXED
+        # for buffer in line.buffers:
+        #     for frame in buffer.frame_buffer:
+        #         intersect = frame.geometry.logic_manifold.intersection(geometry.logic_manifold)
+        #         if not intersect.is_empty:
+        #             if intersect.geom_type == 'MultiPoint':
+        #                 intersect_list = []
+        #                 for point in intersect:
+        #                     intersect_list.append(point)
+        #                 collision_locs += intersect_list
+        #             else:
+        #                 collision_locs += [intersect]
 
 
         return collision_locs

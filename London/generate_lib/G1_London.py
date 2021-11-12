@@ -36,7 +36,19 @@ class Generator:
 
         self.map.combine_interchanges()
 
+    def get_interchange_count(self):
+        return len(self.map.interchange_list)
 
+    def get_track_mileage(self):
+        total_mileage = 0
+        for line in self.map.line_list:
+            for branch in line.branches:
+                for segment in branch.segment_list:
+                    total_mileage += segment.logic_manifold.length
+        return int(total_mileage)
+
+    def get_station_count(self):
+        return 0
 
     def return_map(self):
         return self.map

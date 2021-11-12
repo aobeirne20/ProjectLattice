@@ -14,40 +14,40 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 class gLineSecant():
     def __init__(self, tmap, line_details):
-        print(f"{line_details['name']}----------------------------------------------------")
         self.tmap = tmap
         self.this_line = Line(*gLineSecantHelpers.gen_origin(tmap), line_details)
         self.this_branch = None
         self.sub_branches = []
 
+        self.branch_buffers = []
+
         # ORIGIN BRANCH
-        self.this_branch, frame_buffer = self.this_line.form_origin_branch(), []
+        self.this_branch, frame_buffer = self.this_line.give_origin_branch(), []
         error, frame_buffer = self.r_frame_straight(frame_buffer)
         while error is not None:
             self.this_line = Line(*gLineSecantHelpers.gen_origin(tmap), line_details)
-            self.this_branch, frame_buffer = self.this_line.form_origin_branch(), []
+            self.this_branch, frame_buffer = self.this_line.give_origin_branch(), []
             error, frame_buffer = self.r_frame_straight(frame_buffer)
-        self.save_buffer(frame_buffer)
+        self.save_this_branch_buffer(frame_buffer)
 
         # ANTI ORIGIN BRANCH
         self.this_line.randomize_anti_trend()
-        self.this_branch, frame_buffer = self.this_line.form_anti_branch(), []
+        self.this_branch, frame_buffer = self.this_line.give_anti_branch(), []
         error, frame_buffer = self.r_frame_curve(frame_buffer)
-        self.save_buffer(frame_buffer)
+        self.save_this_branch_buffer(frame_buffer)
 
         # SUB-BRANCHES
-        for branch in self.this_line.sub_branches:
+        for branch in self.this_line.sub_branch_starters:
             self.this_branch, frame_buffer = branch, []
             error, frame_buffer = self.r_frame_straight(frame_buffer)
-            self.save_buffer(frame_buffer)
+            self.save_this_branch_buffer(frame_buffer)
 
     def return_line(self):
-        self.this_line.unload_buffers()
+        self.this_line.unload_branch_buffer(self.branch_buffers)
         return self.this_line
 
-    def save_buffer(self, frame_buffer):
-        self.this_branch.pin_buffer(frame_buffer)
-        self.this_line.pin_branch(self.this_branch)
+    def save_this_branch_buffer(self, frame_buffer):
+        self.branch_buffers.append([frame_buffer, self.this_branch])
 
     # Recursive frame that creates straights
     def r_frame_straight(self, frame_buffer):
@@ -84,9 +84,6 @@ class gLineSecant():
                 current_spatial = self.this_branch.origin_spatial
             else:
                 current_spatial = frame_buffer[-1].geometry.spatial2
-
-            if np.random.choice([True, False], p=[0.08, 0.92]):
-                self.sub_branches.append(self.this_line.form_sub_branch(current_spatial, self.this_branch.trend))
 
             next_curve_change = gLineSecantHelpers.curve_change_choice(self.this_branch.trend, current_spatial)
             next_curve = Arc(current_spatial, next_curve_change, opt.cr_line)

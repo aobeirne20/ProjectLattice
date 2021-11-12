@@ -26,7 +26,8 @@ def gRiver():
     for seg in river.render_list:
         if type(seg) == Straight and seg.spatial1.o == 0 and seg.spatial2.x - seg.spatial1.x > 400 * opt.s:
             possible_segments.append(seg)
-    possible_segments.pop() # Because the last segment can hang off the map, don't place text in it ever
+    if len(possible_segments) > 1:
+        possible_segments.pop() # Because the last segment can hang off the map, don't place text in it ever
     chosen_segment = np.random.choice(possible_segments)
     chosen_position_x = np.random.randint(int(chosen_segment.spatial1.x) + 100 * opt.s, int(chosen_segment.spatial2.x) - 300 * opt.s)
     text_location = Spatial(x=chosen_position_x, y=chosen_segment.spatial1.y, o=degree(0))

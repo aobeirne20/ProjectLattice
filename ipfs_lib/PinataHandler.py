@@ -19,14 +19,33 @@ class PinataHandler:
         ipfs_directory = opt.ipfs_directory_name
 
         files = []
-        for file in os.listdir("Scratch"):
-            t = ('file', (f'{ipfs_directory}/{file}', open(f'Scratch/{file}', "rb")))
+        for file in os.listdir("Scratch/IMG"):
+            t = ('file', (f'{ipfs_directory}/{file}', open(f'Scratch/IMG/{file}', "rb")))
             files.append(t)
 
         files = tuple(files)
 
         res = requests.post(endpoint + api_suffix, files=files, headers=self.headers, data=pinata_options)
 
-        print(res.json())
+        return res.json()['IpfsHash']
+
+    def pin_json(self):
+        endpoint = "https://api.pinata.cloud/"
+        api_suffix = "pinning/pinFileToIPFS"
+
+        pinata_options = {'pinataOptions': '{"cidVersion":0,"wrapWithDirectory":false}'}
+
+        ipfs_directory = opt.ipfs_directory_name
+
+        files = []
+        for file in os.listdir("Scratch/JSON"):
+            t = ('file', (f'{ipfs_directory}/{file}', open(f'Scratch/JSON/{file}', "rb")))
+            files.append(t)
+
+        files = tuple(files)
+
+        res = requests.post(endpoint + api_suffix, files=files, headers=self.headers, data=pinata_options)
+
+        return res.json()['IpfsHash']
 
 
