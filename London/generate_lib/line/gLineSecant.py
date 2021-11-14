@@ -13,10 +13,11 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 
 class gLineSecant():
-    def __init__(self, tmap, line_details):
+    def __init__(self, tmap, line_details, texterator):
         self.tmap = tmap
         self.this_line = Line(*gLineSecantHelpers.gen_origin(tmap), line_details)
         self.this_branch = None
+        self.texterator = texterator
         self.sub_branches = []
 
         self.branch_buffers = []
@@ -73,6 +74,8 @@ class gLineSecant():
                     error, frame_buffer = self.r_terminus(frame_buffer)
                     return None, frame_buffer
 
+            next_frame = gLineSecantHelpers.gen_stations(next_frame, self.texterator, self.this_line.style_details['station_type'])
+
             error, frame_buffer = self.r_frame_curve(frame_buffer + [next_frame])
             return None, frame_buffer
 
@@ -123,10 +126,13 @@ class gLineSecant():
         return None, frame_buffer + [next_frame, end_frame]
 
 
-
-
     def line_collision_check(self, next_frame, frame_buffer, current_spatial):
-        collisions = self.tmap.collision_check(next_frame.geometry, frame_buffer, self.this_line)
+        temporary_frames = []
+        temporary_frames += frame_buffer
+        for branch in self.branch_buffers:
+            # Each branch is a list [branch_buffer, this_branch]
+            temporary_frames += branch[0]
+        collisions = self.tmap.collision_check(next_frame.geometry, temporary_frames)
         inters = []
         for collision in collisions:
             interchange_spatial = Spatial(collision.x, collision.y, current_spatial.o)

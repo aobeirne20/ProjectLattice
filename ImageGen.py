@@ -44,8 +44,7 @@ class ImageGen:
     def metadata(self):
         self.cm.metadata.add_art_attributes(art_style=self.art_style)
         self.cm.metadata.add_gen_attributes(num_stations=self.cm.generator.get_station_count(),
-                                            num_interchanges=self.cm.generator.get_interchange_count(),
-                                            len_trackage=self.cm.generator.get_track_mileage())
+                                            num_interchanges=self.cm.generator.get_interchange_count())
 
     def ex_nihilo_res(self):
         return self.IMG_final, self.cm.metadata.meta_dict

@@ -65,6 +65,7 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
             if station is not None:
                 station.execute_render(draw, station_pen)
 
+
     for branch in line.branches:
         for geometry in branch.segment_list:
             if geometry is not None:
@@ -77,5 +78,11 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
                     geometry.execute_render(draw, mid_pen)
 
     draw.flush()
+    idraw = ImageDraw.Draw(IMG)
+
+    for branch in line.branches:
+        for label in branch.label_list:
+            if label is not None:
+                label.execute_render(idraw, csg.palette_style_guide['black'])
 
     return IMG

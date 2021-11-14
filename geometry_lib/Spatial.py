@@ -12,6 +12,12 @@ class Spatial:
         t = (self.x, self.y)
         return t
 
+    def is_same_location(self, other):
+        if self.x == other.x and self.y == other.y:
+            return True
+        else:
+            return False
+
     def __str__(self):
         return f"({self.x}, {self.y}) @ {self.o} [{self.o.deg}°]"
 

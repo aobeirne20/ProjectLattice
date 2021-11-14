@@ -9,8 +9,9 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 
 class Generator:
-    def __init__(self):
+    def __init__(self, texterator):
         self.map = TMap()
+        self.texterator = texterator
 
     def generate(self):
         # RIVER
@@ -31,21 +32,13 @@ class Generator:
             np.random.shuffle(cycle)
             for line in cycle:
                 if line['gen_type'] == 'secant':
-                    gennie = gLineSecant.gLineSecant(self.map, line)
+                    gennie = gLineSecant.gLineSecant(self.map, line, self.texterator)
                     self.map.line_list.append(gennie.return_line())
 
         self.map.combine_interchanges()
 
     def get_interchange_count(self):
         return len(self.map.interchange_list)
-
-    def get_track_mileage(self):
-        total_mileage = 0
-        for line in self.map.line_list:
-            for branch in line.branches:
-                for segment in branch.segment_list:
-                    total_mileage += segment.logic_manifold.length
-        return int(total_mileage)
 
     def get_station_count(self):
         return 0

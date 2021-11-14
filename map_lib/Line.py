@@ -27,6 +27,8 @@ class Line():
                     branch.interchange_list.append(interchange)
                 for sandwich in frame.sandwiches:
                     branch.sandwich_list.append(sandwich)
+                for label in frame.labels:
+                    branch.label_list.append(label)
             branch.frames = buffer
             self.branches.append(branch)
 
@@ -41,6 +43,6 @@ class Branch():
         self.trend = trend
 
         # Data is stored redundantly, in both original frames and convenient lists. Consider changing later as needed
-        self.segment_list, self.station_list, self.interchange_list, self.sandwich_list = [], [], [], []
+        self.segment_list, self.station_list, self.interchange_list, self.sandwich_list, self.label_list = [], [], [], [], []
         self.frames = None
 
