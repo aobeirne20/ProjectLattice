@@ -83,6 +83,6 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     for branch in line.branches:
         for label in branch.label_list:
             if label is not None:
-                label.execute_render(idraw, csg.palette_style_guide['black'])
+                label.execute_render(idraw, csg.palette_style_guide['corporate_blue'])
 
     return IMG

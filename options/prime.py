@@ -32,24 +32,27 @@ p_secant_return_to_trend_off_by_3 = [1, 0]
 
 p_secant_off_trend_return_by = [0.04, 0.96]
 
-cr_line = 18
 
-single_line_width = 7
-night_tube_inline_width = 5
-double_line_inner_width = 3
-station_tick_width = 4
+single_line_width = 6.75
+night_tube_inline_width = single_line_width * 0.7
+double_line_inner_width = single_line_width * 0.333
+station_tick_width = single_line_width * 0.666
+
+cr_line = single_line_width * 3 + single_line_width / 2
 
 map_border_buffer = 200
 
 # STATION OPTIONS --------------------------------------------------------------------------------------
-tick_length = 8
+tick_length = single_line_width / 2 + single_line_width * 0.666
 
 # INTERCHANGE OPTIONS ----------------------------------------------------------------------------------
-interchange_render_outer_radius = 9
-interchange_render_inner_radius = 6
+interchange_render_outer_radius = single_line_width * 3 / 2
+interchange_render_inner_radius = single_line_width * 2 / 2
 
 # TEXT OPTIONS -----------------------------------------------------------------------------------------
 p_sub_name = 0.25
+station_text_size = 10 #If so, must change single_line_width
+station_font = "fonts/ITC - JohnstonITCPro-Medium.otf"
 
 # IMAGE OPTIONS ----------------------------------------------------------------------------------------
 s_antialiasing = 1
@@ -88,3 +91,5 @@ interchange_render_outer_radius *= s
 interchange_render_inner_radius *= s
 
 map_border_buffer *= s
+
+station_text_size *= s

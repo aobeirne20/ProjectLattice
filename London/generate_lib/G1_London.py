@@ -41,7 +41,12 @@ class Generator:
         return len(self.map.interchange_list)
 
     def get_station_count(self):
-        return 0
+        station_count = 0
+        for line in self.map.line_list:
+            for branch in line.branches:
+                for station in branch.station_list:
+                    station_count += 1
+        return station_count
 
     def return_map(self):
         return self.map

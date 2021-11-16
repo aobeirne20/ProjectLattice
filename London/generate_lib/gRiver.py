@@ -33,7 +33,7 @@ def gRiver():
     text_location = Spatial(x=chosen_position_x, y=chosen_segment.spatial1.y, o=degree(0))
 
     text_box = TextBox(spatial_station=text_location, text="River Thames", offset=0,
-                       font_name="fonts/ITC - JohnstonITCPro-Medium.otf", font_size=opt.river_label_font_size)
+                       font_name="fonts/ITC - JohnstonITCPro-Medium.otf", font_size=opt.river_label_font_size, special_fix="river")
     river.label_list.append(text_box)
 
     return river

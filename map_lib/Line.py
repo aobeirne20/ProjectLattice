@@ -1,11 +1,15 @@
 class Line():
-    def __init__(self, origin_spatial, flip_spatial, trend, flip_trend, style_details):
+    def __init__(self, style_details):
+        self.origin_branch = None
+        self.flip_branch = None
+        self.sub_branch_starters = []
+        self.branches = []
+
+        self.style_details = style_details
+
+    def set_origin_details(self, origin_spatial, flip_spatial, trend, flip_trend):
         self.origin_branch = Branch(origin_spatial, trend)
         self.flip_branch = Branch(flip_spatial, flip_trend)
-        self.sub_branch_starters = []
-
-        self.branches = []
-        self.style_details = style_details
 
     def give_origin_branch(self):
         return self.origin_branch
