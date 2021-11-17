@@ -20,22 +20,29 @@ class gLineSecant():
         self.branch_buffers = []
 
         # ORIGIN BRANCH
-        origin_error = ErrorWrapper.Error(error_desc='placeholder')
-        while origin_error is not None:
+        overall_error = ErrorWrapper.Error(error_desc='placeholder')
+        while overall_error is not None:
             self.this_line.set_origin_details(*gLineSecantHelpers.gen_origin(tmap))
             self.this_branch, origin_frame_buffer = self.this_line.give_origin_branch(), []
             origin_branch = self.this_branch
-            origin_error, origin_frame_buffer = self.r_frame_straight(origin_frame_buffer)
+            overall_error, origin_frame_buffer, _ = self.r_frame_straight(origin_frame_buffer)
 
             # ANTI ORIGIN BRANCH
-            if origin_error is None:
-                anti_origin_error = ErrorWrapper.Error(error_desc='placeholder')
-                while anti_origin_error is not None:
+            if overall_error is None:
+                overall_error = ErrorWrapper.Error(error_desc='placeholder')
+                attempts = 5
+                while attempts > 0:
                     self.this_branch, anti_origin_frame_buffer = self.this_line.give_anti_branch(), []
                     anti_origin_branch = self.this_branch
-                    anti_origin_error, anti_origin_frame_buffer = self.r_frame_curve(anti_origin_frame_buffer)
-                self.save_this_branch_buffer(origin_frame_buffer, origin_branch)
-                self.save_this_branch_buffer(anti_origin_frame_buffer, anti_origin_branch)
+                    overall_error, anti_origin_frame_buffer, _ = self.r_frame_curve(anti_origin_frame_buffer)
+                    if overall_error is None:
+                        self.save_this_branch_buffer(origin_frame_buffer, origin_branch)
+                        self.save_this_branch_buffer(anti_origin_frame_buffer, anti_origin_branch)
+                        break
+                    else:
+                        attempts -= 1
+
+
 
         # SUB-BRANCHES
         for branch in self.this_line.sub_branch_starters:
@@ -57,68 +64,63 @@ class gLineSecant():
     # ------------------------------------------------------------------------------------------------------------------------------------------------
     # STRAIGHT SEGMENTS
     def r_frame_straight(self, frame_buffer):
-        attempts = 100
-        while attempts >= 0:
-            if not frame_buffer:
-                current_spatial = self.this_branch.origin_spatial
-            else:
-                current_spatial = frame_buffer[-1].geometry.spatial2
+        terminus_counter = 0
+        while True:
+            current_spatial = self.this_branch.origin_spatial if not frame_buffer else frame_buffer[-1].geometry.spatial2
+            next_frame = gLineSecantHelpers.BufferFrame(Straight(current_spatial, gLineSecantHelpers.length_normal_dist()))
 
-            next_length = gLineSecantHelpers.length_normal_dist()
-            next_straight = Straight(current_spatial, next_length)
-            next_frame = gLineSecantHelpers.BufferFrame()
-            next_frame.geometry = next_straight
+            error, next_frame = self.line_collision_check(next_frame, frame_buffer)
+            if error is not None:
+                return "text_error", next_frame, -1
 
-            error, next_frame = self.line_collision_check(next_frame, frame_buffer, current_spatial)
-
-            if self.tmap.distance_to_edge(next_straight) <= opt.map_border_buffer:
-                if attempts > 0:
-                    attempts -= 101
+            if self.tmap.distance_to_edge(next_frame.geometry) <= opt.map_border_buffer:
+                if terminus_counter > 2:
+                    terminus_counter += 1
                     continue
                 else:
-                    error, frame_buffer = self.r_terminus(frame_buffer)
-                    return None, frame_buffer
+                    error, frame_buffer, _ = self.r_terminus(frame_buffer)
+                    return None, frame_buffer, 0
 
             next_frame = gLineSecantHelpers.gen_stations(next_frame, self.tmap.texterator, self.this_line.style_details['station_type'])
 
-            error, frame_buffer = self.r_frame_curve(frame_buffer + [next_frame])
-            if error is not None:
-                attempts -= 50
+            error, satisified_frame_buffer, mover = self.r_frame_curve(frame_buffer + [next_frame])
+            if error is None:
+                return None, satisified_frame_buffer, 0
+            elif mover == 0:
                 continue
             else:
-                return None, frame_buffer
-        return "big_error", frame_buffer
+                return error, frame_buffer, mover+1
+
+        return "big_error", frame_buffer, 0
 
     # ------------------------------------------------------------------------------------------------------------------------------------------------
     # CURVE SEGMENTS
     def r_frame_curve(self, frame_buffer):
-        attempts = 100
-        while attempts >= 0:
-            if not frame_buffer:
-                current_spatial = self.this_branch.origin_spatial
-            else:
-                current_spatial = frame_buffer[-1].geometry.spatial2
+        terminus_counter = 0
+        while True:
+            current_spatial = self.this_branch.origin_spatial if not frame_buffer else frame_buffer[-1].geometry.spatial2
+            next_frame = gLineSecantHelpers.BufferFrame(Arc(current_spatial, gLineSecantHelpers.curve_change_choice(self.this_branch.trend, current_spatial), opt.cr_line))
 
-            next_curve_change = gLineSecantHelpers.curve_change_choice(self.this_branch.trend, current_spatial)
-            next_curve = Arc(current_spatial, next_curve_change, opt.cr_line)
-            next_frame = gLineSecantHelpers.BufferFrame()
-            next_frame.geometry = next_curve
+            error, next_frame = self.line_collision_check(next_frame, frame_buffer)
+            if error is not None:
+                return "text_error", next_frame, -1
 
-            error, next_frame = self.line_collision_check(next_frame, frame_buffer, current_spatial)
-
-            if self.tmap.distance_to_edge(next_curve) <= opt.map_border_buffer:
-                if attempts > 0:
-                    attempts -= 50
+            if self.tmap.distance_to_edge(next_frame.geometry) <= opt.map_border_buffer:
+                if terminus_counter > 2:
+                    terminus_counter += 1
                     continue
                 else:
-                    error, frame_buffer = self.r_terminus(frame_buffer)
-                    return None, frame_buffer
+                    error, frame_buffer, _ = self.r_terminus(frame_buffer)
+                    return None, frame_buffer, 0
 
-            error, frame_buffer = self.r_frame_straight(frame_buffer + [next_frame])
-            if error is not None:
+            error, satisified_frame_buffer, mover = self.r_frame_straight(frame_buffer + [next_frame])
+            if error is None:
+                return None, satisified_frame_buffer, 0
+            elif mover == 0:
                 continue
             else:
-                return None, frame_buffer
+                return error, frame_buffer, mover+1
+
         return "big_error", frame_buffer
 
     # ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -136,13 +138,16 @@ class gLineSecant():
         end_frame.geometry = Straight(next_frame.geometry.spatial2, 50)
         end_frame.stations.append(Terminus(end_frame.geometry.spatial2, True, opt.tick_length))
 
-        error, next_frame = self.line_collision_check(next_frame, frame_buffer, current_spatial)
-        error, end_frame = self.line_collision_check(end_frame, frame_buffer, next_frame.geometry.spatial2)
+        error, next_frame = self.line_collision_check(next_frame, frame_buffer)
+        error, end_frame = self.line_collision_check(end_frame, frame_buffer)
 
-        return None, frame_buffer + [next_frame, end_frame]
+        return None, frame_buffer + [next_frame, end_frame], 0
 
 
-    def line_collision_check(self, next_frame, frame_buffer, current_spatial):
+
+    # ------------------------------------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------------------------------------
+    def line_collision_check(self, next_frame, frame_buffer):
         temporary_frames = []
         temporary_frames += frame_buffer
         for branch in self.branch_buffers:
@@ -151,7 +156,14 @@ class gLineSecant():
         collisions = self.tmap.collision_check(next_frame.geometry, temporary_frames, self.this_line)
         inters = []
         for collision in collisions:
-            interchange_spatial = Spatial(collision.intersection.x, collision.intersection.y, current_spatial.o)
+            if collision.desc == 'text':
+                return "text_collision", next_frame
+            if collision.desc == 'river':
+                continue
+            interchange_spatial = Spatial(collision.intersection.x, collision.intersection.y, next_frame.geometry.spatial1.o)
             inters.append(InterchangeNode(interchange_spatial))
         next_frame.interchanges = inters
         return None, next_frame
+
+
+

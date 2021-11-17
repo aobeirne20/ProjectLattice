@@ -11,6 +11,7 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 def gen_origin(tmap):
     # ADD INTERCHANGE STARTS LATER
+    print(f"Genning origin")
     origin_x = np.random.randint(int(opt.secant_starting_bounds_x[0]*csg.xs), int(opt.secant_starting_bounds_x[1]*csg.xs))
     origin_y = np.random.randint(int(opt.secant_starting_bounds_y[0] * csg.ys), int(opt.secant_starting_bounds_y[1] * csg.ys))
 
@@ -100,8 +101,7 @@ def gen_stations(next_frame, texterator, station_type):
     # SEGMENT CAN FIT STATIONS
     if np.random.choice([True, False], p=[0.9, 0.1]):  #Fit ANY Stations
         current_position_along_segment = 0
-        next_frame = gen_stations_recursor(current_position_along_segment, seg_length, min_sep, next_frame, texterator, station_type)
-
+        _, next_frame = gen_stations_recursor(current_position_along_segment, seg_length, min_sep, next_frame, texterator, station_type)
     return next_frame
 
 
@@ -122,9 +122,9 @@ def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterat
                                              offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
         current_pos += sep
         if np.random.choice([True, False], p=[0.5, 0.5]):
-            next_frame = gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type)
+            current_pos, next_frame = gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type)
             break
-    return next_frame
+    return current_pos, next_frame
 
 
 def station_normal_dist(min_sep, max_sep):
@@ -138,8 +138,11 @@ def station_normal_dist(min_sep, max_sep):
 
 
 class BufferFrame:
-    def __init__(self):
-        self.geometry = None
+    def __init__(self, geometry=None):
+        if geometry is None:
+            self.geometry = None
+        else:
+            self.geometry = geometry
         self.stations = []
         self.interchanges = []
         self.sandwiches = []
