@@ -54,7 +54,8 @@ class gLineSecant():
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 
-    # Recursive frame that creates straights
+    # ------------------------------------------------------------------------------------------------------------------------------------------------
+    # STRAIGHT SEGMENTS
     def r_frame_straight(self, frame_buffer):
         attempts = 100
         while attempts >= 0:
@@ -72,7 +73,7 @@ class gLineSecant():
 
             if self.tmap.distance_to_edge(next_straight) <= opt.map_border_buffer:
                 if attempts > 0:
-                    attempts -= 50
+                    attempts -= 101
                     continue
                 else:
                     error, frame_buffer = self.r_terminus(frame_buffer)
@@ -88,7 +89,8 @@ class gLineSecant():
                 return None, frame_buffer
         return "big_error", frame_buffer
 
-    # Recursive frame that creates arcs
+    # ------------------------------------------------------------------------------------------------------------------------------------------------
+    # CURVE SEGMENTS
     def r_frame_curve(self, frame_buffer):
         attempts = 100
         while attempts >= 0:
@@ -119,7 +121,8 @@ class gLineSecant():
                 return None, frame_buffer
         return "big_error", frame_buffer
 
-    # Recursive frame that ends the line
+    # ------------------------------------------------------------------------------------------------------------------------------------------------
+    # TERMINUS SEGMENTS
     def r_terminus(self, frame_buffer):
         if not frame_buffer:
             current_spatial = self.this_branch.origin_spatial

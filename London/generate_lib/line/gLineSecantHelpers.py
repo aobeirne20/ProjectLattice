@@ -93,27 +93,37 @@ def curve_change_choice(current_trend, current_spatial):
 def gen_stations(next_frame, texterator, station_type):
     len_to_min_distance_dict = {0: 26, 1: 26, 2: 18, 3: 26, 4: 26, 5: 26, 6: 18, 7: 26}
     seg_length = next_frame.geometry.logic_manifold.length
-    min_sep = len_to_min_distance_dict[next_frame.geometry.spatial1.o]
+    min_sep = len_to_min_distance_dict[next_frame.geometry.spatial1.o] * opt.s
     # SEGMENT TOO SMALL
-    if seg_length < min_sep:
+    if seg_length < min_sep * 1.5:
         return next_frame
     # SEGMENT CAN FIT STATIONS
-    if
+    if np.random.choice([True, False], p=[0.9, 0.1]):  #Fit ANY Stations
+        current_position_along_segment = 0
+        next_frame = gen_stations_recursor(current_position_along_segment, seg_length, min_sep, next_frame, texterator, station_type)
+
+    return next_frame
 
 
-    spacing_len = np.random.randint(len_to_min_distance_dict[int(next_frame.geometry.spatial1.o)], next_frame.geometry.logic_manifold.length/2)
-    current_step = 0
-    while current_step * spacing_len <  - spacing_len:
-        current_step += 1
+def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type):
+    sep = station_normal_dist(min_sep=min_sep, max_sep=seg_length*0.5)
+    initial_break = np.random.randint(0.1*sep, 1*sep)
+    current_pos = current_pos + initial_break
 
-        x = next_frame.geometry.spatial1.x + next_frame.geometry.spatial1.o.ux * spacing_len * current_step
-        y = next_frame.geometry.spatial1.y + next_frame.geometry.spatial1.o.uy * spacing_len * current_step
-        o = next_frame.geometry.spatial1.o
+    while current_pos < seg_length:
+        if np.random.choice([True, False], p=[0.95, 0.05]):
+            x = next_frame.geometry.spatial1.x + next_frame.geometry.spatial1.o.ux * current_pos
+            y = next_frame.geometry.spatial1.y + next_frame.geometry.spatial1.o.uy * current_pos
+            o = next_frame.geometry.spatial1.o
 
-        next_frame.stations.append(Station(spatial1=Spatial(x, y, o), opposite=False, tick_length=opt.tick_length))
-        next_frame.labels.append(TextBox(spatial_station=next_frame.stations[-1].spatial_station,
-                                         text=texterator.get_name(station_type)[0],
-                                         offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
+            next_frame.stations.append(Station(spatial1=Spatial(x, y, o), opposite=False, tick_length=opt.tick_length))
+            next_frame.labels.append(TextBox(spatial_station=next_frame.stations[-1].spatial_station,
+                                             text=texterator.get_name(station_type)[0],
+                                             offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
+        current_pos += sep
+        if np.random.choice([True, False], p=[0.5, 0.5]):
+            next_frame = gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type)
+            break
     return next_frame
 
 

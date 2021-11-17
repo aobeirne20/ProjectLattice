@@ -47,9 +47,11 @@ class TMap:
                     intersect = label.logic_manifold.intersection(geometry.logic_manifold)
                     collision_locs = self.collision_check_processor(intersect, collision_locs, label, line, "text")
 
-
-
         return collision_locs
+
+
+
+
 
 
 
@@ -72,6 +74,9 @@ class TMap:
     def same_line_collision_preventer(self, frame, geometry):
         return frame.geometry.spatial1.is_same_location(geometry.spatial1) or frame.geometry.spatial1.is_same_location(geometry.spatial2) or \
                frame.geometry.spatial2.is_same_location(geometry.spatial1) or frame.geometry.spatial2.is_same_location(geometry.spatial2)
+
+
+
 
 
 
