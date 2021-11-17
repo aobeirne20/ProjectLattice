@@ -106,7 +106,7 @@ def gen_stations(next_frame, texterator, station_type):
 
 
 def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type):
-    sep = station_normal_dist(min_sep=min_sep, max_sep=seg_length*0.5)
+    sep = station_normal_dist(min_sep=min_sep, max_sep=seg_length*0.75)
     initial_break = np.random.randint(0.1*sep, 1*sep)
     current_pos = current_pos + initial_break
 
@@ -124,11 +124,13 @@ def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterat
         if np.random.choice([True, False], p=[0.5, 0.5]):
             current_pos, next_frame = gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type)
             break
+        print(f"{current_pos}, {sep}")
     return current_pos, next_frame
 
 
 def station_normal_dist(min_sep, max_sep):
     sep = 0
+    print(f"min sep {min_sep} while max sep {max_sep}")
     while not min_sep < sep < max_sep:
         sep = np.random.normal(loc=(min_sep + max_sep)/2, scale=(min_sep + max_sep)/4)
     return int(sep)
