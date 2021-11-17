@@ -37,7 +37,6 @@ def rRiver(tmap: TMap, river, IMG, art_style):
     if asg['background'] == 'black':
         fill_color, border_color = border_color, fill_color
 
-
     outer_pen = aggdraw.Pen(border_color, outer_width)
     inner_pen = aggdraw.Pen(fill_color, inner_width)
 

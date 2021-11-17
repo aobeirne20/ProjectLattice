@@ -59,7 +59,7 @@ class TMap:
         if not intersect.is_empty:
             if intersect.geom_type == 'MultiPoint':
                 intersect_list = []
-                for point in intersect:
+                for point in intersect.geoms:
                     intersect_list.append(Collision(point, segment, line, desc))
                 collision_locs += intersect_list
             elif intersect.geom_type == 'LineString':

@@ -1,28 +1,27 @@
 art_order = {
      "city": "London",
-     "num_pieces": 1890,
+     "num_pieces": 20,
      "art_types_n": {
-                     "Brightline": 200,
-                     "Anti-brightline": 20,
-                     "Darkline": 100,
-                     "Anti-darkline": 10,
-                     "Gold": 50,
-                     "Anti-gold": 10,
-                     "Dark Gold": 25,
-                     "Dark Anti-gold": 5,
+                     "Anti-color": 1,
+                     "Night": 1,
+                     "Anti-night": 1,
+                     "Dark": 1,
+                     "Anti-dark": 1,
+                     "Grey": 1,
+                     "Anti-grey": 1,
+                     "Dark Grey": 1,
+                     "Dark Anti-grey": 1,
+                     "Brightline": 1,
+                     "Anti-brightline": 1,
+                     "Darkline": 1,
+                     "Anti-darkline": 1,
+                     "Gold": 1,
+                     "Anti-gold": 1,
+                     "Dark Gold": 1,
+                     "Dark Anti-gold": 1,
                      "Signature": 1
                      },
      "art_types_p": {
-                     "Color": "fill",
-                     "Anti-color": 0.1,
-                     "Night": 0.1,
-                     "Anti-night": 0.02,
-                     "Dark": 0.1,
-                     "Anti-dark": 0.02,
-                     "Grey": 0.1,
-                     "Anti-grey": 0.02,
-                     "Dark Grey": 0.1,
-                     "Dark Anti-grey": 0.02,
+                     "Color": "fill"
                     }
      }
-

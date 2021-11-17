@@ -1,6 +1,7 @@
 import os
 import json
 import time
+from multiprocessing import Pool, Process
 
 from manager_lib import ArtAssistant as AA
 import ImageGen as IG

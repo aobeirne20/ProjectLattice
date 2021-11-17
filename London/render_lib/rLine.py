@@ -19,6 +19,7 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     lsg = line.style_details
     line_color = lsg['color']
     mid_color = csg.palette_style_guide['white']
+    label_color = csg.palette_style_guide['corporate_blue']
 
     # LINE COLORING
     if asg_d == 'greyscale' or asg_d == 'inverted greyscale':
@@ -29,6 +30,17 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
 
     if asg_d == 'inverted' or asg_d == 'inverted gold' or asg_d == 'inverted greyscale':
         line_color = invert_color(line_color)
+
+    # LABEL COLORING
+    if asg_d == 'greyscale' or asg_d == 'inverted greyscale':
+        label_color = greyscale_color(label_color)
+
+    if asg_b == 'black':
+        label_color = invert_color(label_color)
+        label_color = csg.palette_style_guide['white']
+
+    if asg_b == 'darkblue':
+        label_color = csg.palette_style_guide['white']
 
     # INSIDE COLORING
     if asg_b == 'black':
@@ -59,6 +71,9 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
             for geometry in branch.segment_list:
                 if geometry is not None:
                     geometry.execute_render(draw, white_outline_pen)
+            for station in branch.station_list:
+                if station is not None:
+                    station.execute_render(draw, white_outline_pen)
 
     for branch in line.branches:
         for station in branch.station_list:
@@ -83,6 +98,6 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     for branch in line.branches:
         for label in branch.label_list:
             if label is not None:
-                label.execute_render(idraw, csg.palette_style_guide['corporate_blue'])
+                label.execute_render(idraw, label_color)
 
     return IMG
