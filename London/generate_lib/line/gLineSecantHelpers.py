@@ -91,10 +91,19 @@ def curve_change_choice(current_trend, current_spatial):
 
 
 def gen_stations(next_frame, texterator, station_type):
-    len_to_min_distance_dict = {0: 26 * opt.s, 1: 26 * opt.s, 2: 18 * opt.s, 3: 26 * opt.s, 4: 26 * opt.s, 5: 26 * opt.s, 6: 18 * opt.s, 7: 26 * opt.s}
+    len_to_min_distance_dict = {0: 26, 1: 26, 2: 18, 3: 26, 4: 26, 5: 26, 6: 18, 7: 26}
+    seg_length = next_frame.geometry.logic_manifold.length
+    min_sep = len_to_min_distance_dict[next_frame.geometry.spatial1.o]
+    # SEGMENT TOO SMALL
+    if seg_length < min_sep:
+        return next_frame
+    # SEGMENT CAN FIT STATIONS
+    if
+
+
     spacing_len = np.random.randint(len_to_min_distance_dict[int(next_frame.geometry.spatial1.o)], next_frame.geometry.logic_manifold.length/2)
     current_step = 0
-    while current_step * spacing_len < next_frame.geometry.logic_manifold.length - spacing_len:
+    while current_step * spacing_len <  - spacing_len:
         current_step += 1
 
         x = next_frame.geometry.spatial1.x + next_frame.geometry.spatial1.o.ux * spacing_len * current_step
@@ -105,10 +114,14 @@ def gen_stations(next_frame, texterator, station_type):
         next_frame.labels.append(TextBox(spatial_station=next_frame.stations[-1].spatial_station,
                                          text=texterator.get_name(station_type)[0],
                                          offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
-
-
-
     return next_frame
+
+
+def station_normal_dist(min_sep, max_sep):
+    sep = 0
+    while not min_sep < sep < max_sep:
+        sep = np.random.normal(loc=(min_sep + max_sep)/2, scale=(min_sep + max_sep)/4)
+    return int(sep)
 
 
 

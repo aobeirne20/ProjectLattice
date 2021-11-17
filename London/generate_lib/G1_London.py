@@ -10,8 +10,7 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 class Generator:
     def __init__(self, texterator):
-        self.map = TMap()
-        self.texterator = texterator
+        self.map = TMap(texterator)
 
     def generate(self):
         # RIVER
@@ -32,7 +31,7 @@ class Generator:
             np.random.shuffle(cycle)
             for line in cycle:
                 if line['gen_type'] == 'secant':
-                    gennie = gLineSecant.gLineSecant(self.map, line, self.texterator)
+                    gennie = gLineSecant.gLineSecant(self.map, line)
                     self.map.line_list.append(gennie.return_line())
 
         self.map.combine_interchanges()

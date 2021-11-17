@@ -4,7 +4,7 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 
 class TMap:
-    def __init__(self):
+    def __init__(self, texterator):
         self.line_list = []
         self.interchange_list = []
         self.feature_list = []
@@ -12,6 +12,7 @@ class TMap:
         self.secant_not_picked_dir = [0, 1, 2, 3, 4, 5, 6, 7]
         self.secant_picked_dir = []
         self.logic_manifold = LinearRing([[0, 0], [csg.xs, 0], [csg.xs, csg.ys], [0, csg.ys]])
+        self.texterator = texterator
 
     def collision_check(self, geometry, temporary_frames, this_line):
         collision_locs = []
@@ -61,7 +62,7 @@ class TMap:
                 collision_locs += intersect_list
             elif intersect.geom_type == 'LineString':
                 intersect_list = []
-                for point in intersect.boundary:
+                for point in intersect.boundary.geoms:
                     intersect_list.append(Collision(point, segment, line, desc))
                 collision_locs += intersect_list
             else:

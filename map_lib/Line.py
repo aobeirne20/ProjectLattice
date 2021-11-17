@@ -36,9 +36,6 @@ class Line():
             branch.frames = buffer
             self.branches.append(branch)
 
-    # Not implemented yet
-    def randomize_anti_trend(self):
-        pass
 
 
 class Branch():

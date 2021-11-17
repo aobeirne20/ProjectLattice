@@ -6,48 +6,50 @@ from geometry_lib.StationGeometry import Station, Terminus
 from geometry_lib.InterchangeGeometry import InterchangeNode, InterchangeConnector, DarkNode
 from geometry_lib.TrackGeometry import Straight, Arc
 from map_lib.Line import Line
-from London.generate_lib.line import gLineSecantHelpers
+from London.generate_lib.line import gLineSecantHelpers, ErrorWrapper
 
 from options import prime as opt
 from parameters.StyleGuides import complete_style_guide as csg
 
 class gLineSecant():
-    def __init__(self, tmap, line_details, texterator):
+    def __init__(self, tmap, line_details):
         self.tmap = tmap
         self.this_line = Line(line_details)
         self.this_branch = None
-        self.texterator = texterator
         self.sub_branches = []
-
         self.branch_buffers = []
 
-
-        prime_error = "origin"
         # ORIGIN BRANCH
-        while error is not None:
+        origin_error = ErrorWrapper.Error(error_desc='placeholder')
+        while origin_error is not None:
             self.this_line.set_origin_details(*gLineSecantHelpers.gen_origin(tmap))
-            self.this_branch, frame_buffer = self.this_line.give_origin_branch(), []
-            error, frame_buffer = self.r_frame_straight(frame_buffer)
-        self.save_this_branch_buffer(frame_buffer)
+            self.this_branch, origin_frame_buffer = self.this_line.give_origin_branch(), []
+            origin_branch = self.this_branch
+            origin_error, origin_frame_buffer = self.r_frame_straight(origin_frame_buffer)
 
-        # ANTI ORIGIN BRANCH
-        self.this_line.randomize_anti_trend()
-        self.this_branch, frame_buffer = self.this_line.give_anti_branch(), []
-        error, frame_buffer = self.r_frame_curve(frame_buffer)
-        self.save_this_branch_buffer(frame_buffer)
+            # ANTI ORIGIN BRANCH
+            if origin_error is None:
+                anti_origin_error = ErrorWrapper.Error(error_desc='placeholder')
+                while anti_origin_error is not None:
+                    self.this_branch, anti_origin_frame_buffer = self.this_line.give_anti_branch(), []
+                    anti_origin_branch = self.this_branch
+                    anti_origin_error, anti_origin_frame_buffer = self.r_frame_curve(anti_origin_frame_buffer)
+                self.save_this_branch_buffer(origin_frame_buffer, origin_branch)
+                self.save_this_branch_buffer(anti_origin_frame_buffer, anti_origin_branch)
 
         # SUB-BRANCHES
         for branch in self.this_line.sub_branch_starters:
             self.this_branch, frame_buffer = branch, []
             error, frame_buffer = self.r_frame_straight(frame_buffer)
-            self.save_this_branch_buffer(frame_buffer)
+            if error is None:
+                self.save_this_branch_buffer(frame_buffer, self.this_branch)
 
     def return_line(self):
         self.this_line.unload_branch_buffer(self.branch_buffers)
         return self.this_line
 
-    def save_this_branch_buffer(self, frame_buffer):
-        self.branch_buffers.append([frame_buffer, self.this_branch])
+    def save_this_branch_buffer(self, frame_buffer, branch):
+        self.branch_buffers.append([frame_buffer, branch])
 
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -67,8 +69,6 @@ class gLineSecant():
             next_frame.geometry = next_straight
 
             error, next_frame = self.line_collision_check(next_frame, frame_buffer, current_spatial)
-            if error is not None:
-                continue
 
             if self.tmap.distance_to_edge(next_straight) <= opt.map_border_buffer:
                 if attempts > 0:
@@ -78,7 +78,7 @@ class gLineSecant():
                     error, frame_buffer = self.r_terminus(frame_buffer)
                     return None, frame_buffer
 
-            next_frame = gLineSecantHelpers.gen_stations(next_frame, self.texterator, self.this_line.style_details['station_type'])
+            next_frame = gLineSecantHelpers.gen_stations(next_frame, self.tmap.texterator, self.this_line.style_details['station_type'])
 
             error, frame_buffer = self.r_frame_curve(frame_buffer + [next_frame])
             if error is not None:
@@ -148,10 +148,7 @@ class gLineSecant():
         collisions = self.tmap.collision_check(next_frame.geometry, temporary_frames, self.this_line)
         inters = []
         for collision in collisions:
-            if collision.desc == 'text':
-                return "big_error", next_frame
-            else:
-                interchange_spatial = Spatial(collision.intersection.x, collision.intersection.y, current_spatial.o)
-                inters.append(InterchangeNode(interchange_spatial))
+            interchange_spatial = Spatial(collision.intersection.x, collision.intersection.y, current_spatial.o)
+            inters.append(InterchangeNode(interchange_spatial))
         next_frame.interchanges = inters
         return None, next_frame
