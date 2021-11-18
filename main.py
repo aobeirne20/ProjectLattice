@@ -3,6 +3,8 @@ import sys
 from manager_lib import ArtDirector as AD
 from options.art_order import art_order
 
+from color_lib import ColorOps
+
 if __name__ == "__main__":
     sys.setrecursionlimit(10000)
     director = AD.ArtDirector()

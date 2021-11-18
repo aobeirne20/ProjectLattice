@@ -1,6 +1,9 @@
+import colorsys
+
 from color_lib.ColorHelpers import *
 
 from parameters.StyleGuides import complete_style_guide as csg
+
 
 def invert_color(rgba_color):
     inverted_color = [255 - dcode for dcode in rgba_color]
@@ -27,6 +30,16 @@ def goldshade_color(rgba_color):
     g_gold = int((g / 255) * (g1 - g0) + g0)
     b_gold = int((b / 255) * (b1 - b0) + b0)
     return tuple([r_gold, g_gold, b_gold, a])
+
+
+def darken_to_p(rgba_color, percent):
+    rgb8 = rgba_color[0:3]
+    r, g, b = [rgb8bit_to_dec(n) for n in rgb8]
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    l = percent * l
+    r, g, b = colorsys.hls_to_rgb(h, l, s)
+    return tuple([int(255*r), int(255*g), int(255*b), rgba_color[-1]])
+
 
 
 

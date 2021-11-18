@@ -7,7 +7,7 @@ art_style_guide = {
     },
     "Anti-color": {
         'details': 'inverted',
-        'river': 'inverted',
+        'river': 'normal',
         'background': 'white',
         'name': 'Anti-color'
     },
@@ -20,7 +20,7 @@ art_style_guide = {
     },
     "Anti-night": {
         'details': 'inverted',
-        'river': 'inverted',
+        'river': 'normal',
         'background': 'darkblue',
         'name': 'Anti-night'
     },
@@ -33,7 +33,7 @@ art_style_guide = {
     },
     "Anti-dark": {
         'details': 'inverted',
-        'river': 'inverted',
+        'river': 'normal',
         'background': 'black',
         'name': 'Anti-dark'
     },
@@ -46,7 +46,7 @@ art_style_guide = {
     },
     "Anti-grey": {
         'details': 'inverted greyscale',
-        'river': 'inverted greyscale',
+        'river': 'greyscale',
         'background': 'white',
         'name': 'Anti-grey'
     },
@@ -58,7 +58,7 @@ art_style_guide = {
     },
     "Dark Anti-grey": {
         'details': 'inverted greyscale',
-        'river': 'inverted greyscale',
+        'river': 'greyscale',
         'background': 'black',
         'name': 'Dark Anti-grey'
     },
@@ -71,7 +71,7 @@ art_style_guide = {
     },
     "Anti-brightline": {
         'details': 'inverted line',
-        'river': 'inverted greyscale',
+        'river': 'greyscale',
         'background': 'white',
         'name': 'Anti-brightline'
     },
@@ -83,7 +83,7 @@ art_style_guide = {
     },
     "Anti-darkline": {
         'details': 'inverted line',
-        'river': 'inverted greyscale',
+        'river': 'greyscale',
         'background': 'black',
         'name': 'Anti-darkline'
     },
@@ -115,7 +115,7 @@ art_style_guide = {
 
     "Signature": {
         'details': 'greyscale',
-        'river': 'normal',
+        'river': 'greyscale',
         'background': 'white',
         'name': 'Signature'
     },

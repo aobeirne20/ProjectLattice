@@ -28,6 +28,7 @@ def rLine(tmap: TMap, line: Line, IMG, art_style, brightline=False):
 
     if asg_d == 'gold' or asg_d == 'inverted gold':
         line_color = goldshade_color(line_color)
+        label_color = csg.palette_style_guide['black']
 
     if asg_d == 'inverted' or asg_d == 'inverted gold' or asg_d == 'inverted greyscale':
         line_color = invert_color(line_color)
