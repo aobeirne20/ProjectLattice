@@ -9,8 +9,9 @@ from options import prime as opt
 from parameters.StyleGuides import complete_style_guide as csg
 
 
-def rLine(tmap: TMap, line: Line, IMG, art_style):
+def rLine(tmap: TMap, line: Line, IMG, art_style, brightline=False):
     draw = aggdraw.Draw(IMG)
+
     draw.setantialias(False)
 
     asg = csg.art_style_guide[art_style]
@@ -36,8 +37,10 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
         label_color = greyscale_color(label_color)
 
     if asg_b == 'black':
-        label_color = invert_color(label_color)
-        label_color = csg.palette_style_guide['white']
+        if brightline is True:
+            label_color = invert_color(label_color)
+        else:
+            label_color = csg.palette_style_guide['white']
 
     if asg_b == 'darkblue':
         label_color = csg.palette_style_guide['white']
@@ -78,7 +81,10 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     for branch in line.branches:
         for station in branch.station_list:
             if station is not None:
-                station.execute_render(draw, station_pen)
+                if asg_b == 'darkblue':
+                    station.execute_render(draw, station_pen, True)
+                else:
+                    station.execute_render(draw, station_pen)
 
 
     for branch in line.branches:
@@ -94,6 +100,7 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
 
     draw.flush()
     idraw = ImageDraw.Draw(IMG)
+
 
     for branch in line.branches:
         for label in branch.label_list:

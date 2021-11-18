@@ -44,6 +44,7 @@ map_border_buffer = 200
 
 # STATION OPTIONS --------------------------------------------------------------------------------------
 tick_length = single_line_width / 2 + single_line_width * 0.666
+inner_station_tick_width = single_line_width / 2 + single_line_width * 0.666 * 0.7
 
 # INTERCHANGE OPTIONS ----------------------------------------------------------------------------------
 interchange_render_outer_radius = single_line_width * 3 / 2
@@ -55,8 +56,8 @@ station_text_size = 10 #If so, must change single_line_width
 station_font = "fonts/ITC - JohnstonITCPro-Medium.otf"
 
 # IMAGE OPTIONS ----------------------------------------------------------------------------------------
-s_antialiasing = 1
-s_outputimage = 1
+s_antialiasing = 2
+s_outputimage = 2
 
 # PINATA OPTIONS ---------------------------------------------------------------------------------------
 pinata_public_key = "314b41ace95e24c21572"
@@ -86,6 +87,7 @@ double_line_inner_width *= s
 station_tick_width *= s
 
 tick_length *= s
+inner_station_tick_width *= s
 
 interchange_render_outer_radius *= s
 interchange_render_inner_radius *= s

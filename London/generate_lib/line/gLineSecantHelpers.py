@@ -11,7 +11,6 @@ from parameters.StyleGuides import complete_style_guide as csg
 
 def gen_origin(tmap):
     # ADD INTERCHANGE STARTS LATER
-    print(f"Genning origin")
     origin_x = np.random.randint(int(opt.secant_starting_bounds_x[0]*csg.xs), int(opt.secant_starting_bounds_x[1]*csg.xs))
     origin_y = np.random.randint(int(opt.secant_starting_bounds_y[0] * csg.ys), int(opt.secant_starting_bounds_y[1] * csg.ys))
 
@@ -124,13 +123,11 @@ def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterat
         if np.random.choice([True, False], p=[0.5, 0.5]):
             current_pos, next_frame = gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterator, station_type)
             break
-        print(f"{current_pos}, {sep}")
     return current_pos, next_frame
 
 
 def station_normal_dist(min_sep, max_sep):
     sep = 0
-    print(f"min sep {min_sep} while max sep {max_sep}")
     while not min_sep < sep < max_sep:
         sep = np.random.normal(loc=(min_sep + max_sep)/2, scale=(min_sep + max_sep)/4)
     return int(sep)

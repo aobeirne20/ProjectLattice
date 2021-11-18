@@ -45,7 +45,7 @@ class Renderer:
         else:
             raise ValueError()
 
-        self.IMG = rLine(tmap, bright_line, self.IMG, single_type)
+        self.IMG = rLine(tmap, bright_line, self.IMG, single_type, True)
         for line in tmap.line_list:
             self.IMG = rLine(tmap, line, self.IMG, group_type)
 

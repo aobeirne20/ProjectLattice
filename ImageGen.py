@@ -1,5 +1,5 @@
 import PIL
-from PIL import Image
+from PIL import Image, ImageOps
 
 import CompleteMaterializer
 
@@ -40,6 +40,14 @@ class ImageGen:
     def post_process(self):
         self.IMG_background.paste(self.IMG_render, mask=self.IMG_render)
         self.IMG_final = self.IMG_background.resize((csg.x, csg.y), resample=PIL.Image.ANTIALIAS)
+        if self.art_style == 'Signature':
+            roundel, empty = PIL.Image.open("color_lib/withoutText.png").resize((csg.x, csg.y)), PIL.Image.new('RGBA', (csg.x, csg.y), (0, 0, 0, 0))
+            empty.paste(roundel, mask=ImageOps.invert(self.IMG_final.convert("L")))
+            self.IMG_final.paste(roundel, mask=empty)
+
+
+
+
 
     def metadata(self):
         self.cm.metadata.add_art_attributes(art_style=self.art_style)

@@ -1,6 +1,7 @@
 from shapely.geometry import LineString
 import aggdraw
 
+import options.prime as opt
 from geometry_lib.Spatial import Spatial
 from geometry_lib.Geometry import Geometry
 
@@ -37,9 +38,14 @@ class Terminus(StationGeometry):
 
         self.logic_manifold = LineString([spatial_t1.t, spatial_t2.t])
         self.render_manifold = (spatial_t1.x, spatial_t1.y, spatial_t2.x, spatial_t2.y)
+        self.opposite = opposite
 
-    def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen):
-        draw.line(self.render_manifold, line_pen)
+    def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen, shorten_for_night_tube=False):
+        if shorten_for_night_tube is False:
+            draw.line(self.render_manifold, line_pen)
+        else:
+            new_station = Terminus(self.spatial1, self.opposite, opt.inner_station_tick_width)
+            draw.line(new_station.render_manifold, line_pen)
 
 
 class Station(StationGeometry):
@@ -56,6 +62,11 @@ class Station(StationGeometry):
                                        o=station_o)
         self.logic_manifold = LineString([self.spatial1.t, self.spatial_station.t])
         self.render_manifold = (self.spatial1.x, self.spatial1.y, self.spatial_station.x, self.spatial_station.y)
+        self.opposite = opposite
 
-    def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen):
-        draw.line(self.render_manifold, line_pen)
+    def execute_render(self, draw: aggdraw.Draw, line_pen: aggdraw.Pen, shorten_for_night_tube=False):
+        if shorten_for_night_tube is False:
+            draw.line(self.render_manifold, line_pen)
+        else:
+            new_station = Station(self.spatial1, self.opposite, opt.inner_station_tick_width)
+            draw.line(new_station.render_manifold, line_pen)

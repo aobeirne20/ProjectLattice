@@ -12,5 +12,5 @@ if __name__ == "__main__":
     director.i_am_a_creative_type()
     #director.pin_to_ipfs()
 
-    director.i_sell_hotdogs(city="London", art_type="Color")
+    #director.i_sell_hotdogs(city="London", art_type="Dark")
 

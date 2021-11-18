@@ -114,7 +114,7 @@ art_style_guide = {
     },
 
     "Signature": {
-        'details': 'signature',
+        'details': 'greyscale',
         'river': 'normal',
         'background': 'white',
         'name': 'Signature'
