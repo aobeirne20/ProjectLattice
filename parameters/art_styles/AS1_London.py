@@ -14,13 +14,13 @@ art_style_guide = {
 
     "Night": {
         'details': 'color',
-        'river': 'normal',
+        'river': 'night',
         'background': 'darkblue',
         'name': 'Night'
     },
     "Anti-night": {
         'details': 'inverted',
-        'river': 'normal',
+        'river': 'night',
         'background': 'darkblue',
         'name': 'Anti-night'
     },
