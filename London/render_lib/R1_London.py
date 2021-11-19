@@ -31,21 +31,17 @@ class Renderer:
         tmap.line_list.remove(bright_line)
 
         if self.art_style == "Brightline":
-            single_type = "Color"
             group_type = "Grey"
         elif self.art_style == "Anti-brightline":
-            single_type = "Anti-color"
             group_type = "Anti-grey"
         elif self.art_style == "Darkline":
-            single_type = "Dark"
             group_type = "Dark Grey"
         elif self.art_style == "Anti-darkline":
-            single_type = "Anti-dark"
             group_type = "Dark Anti-grey"
         else:
             raise ValueError()
 
-        self.IMG = rLine(tmap, bright_line, self.IMG, single_type, True)
+        self.IMG = rLine(tmap, bright_line, self.IMG, self.art_style)
         for line in tmap.line_list:
             self.IMG = rLine(tmap, line, self.IMG, group_type)
 

@@ -70,7 +70,7 @@ art_style_guide = {
         'name': 'Brightline'
     },
     "Anti-brightline": {
-        'details': 'inverted line',
+        'details': 'line',
         'river': 'greyscale',
         'background': 'white',
         'name': 'Anti-brightline'
