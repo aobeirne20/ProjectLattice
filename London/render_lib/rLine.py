@@ -27,10 +27,6 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     if asg_d == 'greyscale' or asg_d == 'inverted greyscale':
         line_color = greyscale_color(line_color)
 
-
-
-
-
     if asg_d == 'gold' or asg_d == 'inverted gold':
         line_color = goldshade_color(line_color)
         if asg_d == 'inverted gold':
@@ -39,13 +35,43 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
     if line_color == csg.palette_style_guide[asg_b]:
         line_color = invert_color(line_color)
 
+    # ------------------------------------------------------------------------------------------------------------------
+    # MID COLOR
+    if asg_b == 'darkblue':
+        mid_color = csg.palette_style_guide['white']
+    else:
+        mid_color = csg.palette_style_guide[asg_b]
 
-    label_color = csg.palette_style_guide['black']
+    # ------------------------------------------------------------------------------------------------------------------
+    # LABEL COLOR
+    label_color = csg.palette_style_guide['corporate_blue']
 
+    if asg_b == 'darkblue':
+        label_color = csg.palette_style_guide['white']
 
+    if asg_b == 'black':
+        if asg_d == 'color' or asg_d == 'inverted':
+            label_color = csg.palette_style_guide['white']
 
+    if asg_d == 'greyscale' or asg_d == 'inverted greyscale':
+        if asg_b == 'black':
+            label_color = csg.palette_style_guide['white']
+        else:
+            label_color = csg.palette_style_guide['black']
+
+    if asg_d == 'line' or asg_d == 'inverted line':
+        if asg_b == 'black':
+            label_color = invert_color(label_color)
+
+    if asg_d == 'gold' or asg_d == 'inverted gold':
+        if asg_b == 'black':
+            label_color = csg.palette_style_guide['white']
+        else:
+            label_color = csg.palette_style_guide['black']
+
+    # ------------------------------------------------------------------------------------------------------------------
     line_pen = aggdraw.Pen(line_color, opt.single_line_width)
-    mid_pen = aggdraw.Pen(csg.palette_style_guide[asg_b], opt.double_line_inner_width)
+    mid_pen = aggdraw.Pen(mid_color, opt.double_line_inner_width)
     station_pen = aggdraw.Pen(line_color, opt.station_tick_width)
 
     # RENDERING
@@ -68,7 +94,6 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
                 else:
                     station.execute_render(draw, station_pen)
 
-
     for branch in line.branches:
         for geometry in branch.segment_list:
             if geometry is not None:
@@ -82,7 +107,6 @@ def rLine(tmap: TMap, line: Line, IMG, art_style):
 
     draw.flush()
     idraw = ImageDraw.Draw(IMG)
-
 
     for branch in line.branches:
         for label in branch.label_list:

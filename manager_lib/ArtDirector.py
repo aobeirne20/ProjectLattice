@@ -95,7 +95,7 @@ class ArtDirector:
             metadata[0]["external_url"] = "metrotopology.mypinata.cloud/ipfs/" + img_directory_cid + "/" + str(metadata[1]) + ".png"
 
             with open(f'Scratch/JSON/{str(metadata[1])}.json', 'w') as outfile:
-                json.dump(metadata, outfile)
+                json.dump(metadata[0], outfile)
 
         json_directory_cid = pinata_handler.pin_json()
         final_url = "metrotopology.mypinata.cloud/ipfs/" + json_directory_cid
