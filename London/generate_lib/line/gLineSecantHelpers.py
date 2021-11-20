@@ -15,19 +15,18 @@ def gen_origin(tmap):
     origin_y = np.random.randint(int(opt.secant_starting_bounds_y[0] * csg.ys), int(opt.secant_starting_bounds_y[1] * csg.ys))
 
     # PICK THE TREND
+    # True if Picked is EMPTY
     if not tmap.secant_picked_dir:
         trend = np.random.choice(tmap.secant_not_picked_dir)
-        tmap.secant_not_picked_dir.remove(trend)
-        tmap.secant_picked_dir.append(trend)
+    # True if Not Picked is EMPTY
     elif not tmap.secant_not_picked_dir:
         trend = np.random.choice(tmap.secant_picked_dir)
     else:
         if np.random.choice(opt.v_secant_pick_o_from_not_used_list, p=opt.p_secant_pick_o_from_not_used_list):
             trend = np.random.choice(tmap.secant_not_picked_dir)
-            tmap.secant_not_picked_dir.remove(trend)
-            tmap.secant_picked_dir.append(trend)
         else:
             trend = np.random.choice([0, 1, 2, 3, 4, 5, 6, 7])
+
 
     # PICK THE ORIGIN DIRECTION
     trend = degree(trend)

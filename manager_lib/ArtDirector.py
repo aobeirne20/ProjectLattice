@@ -1,7 +1,8 @@
 import os
 import json
 import time
-from multiprocessing import Pool, Process
+from joblib import Parallel, delayed
+from tqdm import tqdm
 
 from manager_lib import ArtAssistant as AA
 import ImageGen as IG
@@ -62,28 +63,38 @@ class ArtDirector:
         num = 1
         gen_track = []
         print(f"Starting generation for {self.art_order['City']}:")
-        for art_type in self.art_order["RList"]:
+
+        def generate_one(art_type, num, gen_track, art_order, batch_value):
             time_start = time.perf_counter()
-            ig = IG.ImageGen(city=self.art_order['City'], art_style=art_type)
+            ig = IG.ImageGen(city=art_order['City'], art_style=art_type)
             image, metadata = ig.ex_nihilo_res()
-            self.metadata.append([metadata, num])
             image.save(f"Scratch/IMG/{num}.png")
-            image.save(f"Gallery/Batch_{self.batch_value:03d}/All/{num}_{art_type}.png")
-            image.save(f"Gallery/Batch_{self.batch_value:03d}/{art_type}/{num}.png")
+            image.save(f"Gallery/Batch_{batch_value:03d}/All/{num}_{art_type}.png")
+            image.save(f"Gallery/Batch_{batch_value:03d}/{art_type}/{num}.png")
             time_end = time.perf_counter()
 
             # Loading Bar
             gen_track.append(time_end - time_start)
             bar = u'\u2588'
-            n_blocks = int(num * 50 / len(self.art_order["RList"]))
-            time_remaining = (sum(gen_track)/len(gen_track)) * (len(self.art_order["RList"])-num)
+            n_blocks = int(num * 50 / len(art_order["RList"]))
+            time_remaining = (sum(gen_track) / len(gen_track)) * (len(art_order["RList"]) - num)
             m, s = divmod(time_remaining, 60)
             h, m = divmod(m, 60)
-            print(f'\rPiece {num:04d}/{len(self.art_order["RList"]):04d} |{bar * n_blocks}{" " * (50 - n_blocks)}|  '
+            print(f'\rPiece {num:04d}/{len(art_order["RList"]):04d} |{bar * n_blocks}{" " * (50 - n_blocks)}|  '
                   f'Estimated Time Remaining: {h:.0f}h{m:.0f}m{s:.0f}s', end='')
+            return [metadata, num]
 
-            # Increment the counter
-            num += 1
+        if opt.use_multiprocessing is True:
+            self.metadata = Parallel(n_jobs=8)(delayed(generate_one)(art_type, num+1, gen_track, self.art_order, self.batch_value) for num, art_type in enumerate(self.art_order["RList"]))
+        else:
+            for art_type in self.art_order["RList"]:
+                self.metadata.append(generate_one(art_type, num, gen_track, self.art_order, self.batch_value))
+                # Increment the counter
+                num += 1
+
+
+
+
 
     def pin_to_ipfs(self):
         pinata_handler = PH.PinataHandler()
@@ -91,10 +102,10 @@ class ArtDirector:
 
         for metadata in self.metadata:
             metadata[0]["name"] = self.art_order["City"] + " #" + str(metadata[1])
+            metadata[0]["external_url"] = "https://metrotopology.mypinata.cloud/ipfs/" + img_directory_cid + "/" + str(metadata[1]) + ".png"
             metadata[0]["image"] = "ipfs://" + img_directory_cid + "/" + str(metadata[1]) + ".png"
-            metadata[0]["external_url"] = "metrotopology.mypinata.cloud/ipfs/" + img_directory_cid + "/" + str(metadata[1]) + ".png"
 
-            with open(f'Scratch/JSON/{str(metadata[1])}.json', 'w') as outfile:
+            with open(f'Scratch/JSON/{str(metadata[1])}', 'w') as outfile:
                 json.dump(metadata[0], outfile)
 
         json_directory_cid = pinata_handler.pin_json()

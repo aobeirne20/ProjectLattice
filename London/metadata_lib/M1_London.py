@@ -46,17 +46,17 @@ class Metadata:
         else:
             style = 'Normal'
 
-        background_style_dict = {"trait_type": "Scene", "value": setting},
+        background_style_dict = {"trait_type": "Scene", "value": setting}
         style_style_dict = {"trait_type": "Style", "value": style}
         self.meta_dict["attributes"].append(background_style_dict)
         self.meta_dict["attributes"].append(style_style_dict)
 
         if art_style['details'] == 'inverted gold' or art_style['details'] == 'inverted greyscale' or \
             art_style['details'] == 'inverted' or art_style['details'] == 'inverted line':
-            augment_style_dict = {"trait_type": "Augment", "value": 'Inverted'},
+            augment_style_dict = {"trait_type": "Augment", "value": 'Inverted'}
             self.meta_dict["attributes"].append(augment_style_dict)
         elif art_style['name'] == 'Signature':
-            augment_style_dict = {"trait_type": "Augment", "value": 'Signature'},
+            augment_style_dict = {"trait_type": "Augment", "value": 'Signature'}
             self.meta_dict["attributes"].append(augment_style_dict)
 
 

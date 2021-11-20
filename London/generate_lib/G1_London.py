@@ -31,6 +31,7 @@ class Generator:
             np.random.shuffle(cycle)
             for line in cycle:
                 if line['gen_type'] == 'secant':
+                    print(f"{line['name']}----------------------------------------------------------------------------------------------------------")
                     gennie = gLineSecant.gLineSecant(self.map, line)
                     self.map.line_list.append(gennie.return_line())
 

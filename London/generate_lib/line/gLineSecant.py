@@ -11,6 +11,7 @@ from London.generate_lib.line import gLineSecantHelpers, ErrorWrapper
 from options import prime as opt
 from parameters.StyleGuides import complete_style_guide as csg
 
+
 class gLineSecant():
     def __init__(self, tmap, line_details):
         self.tmap = tmap
@@ -42,8 +43,6 @@ class gLineSecant():
                     else:
                         attempts -= 1
 
-
-
         # SUB-BRANCHES
         for branch in self.this_line.sub_branch_starters:
             self.this_branch, frame_buffer = branch, []
@@ -52,6 +51,18 @@ class gLineSecant():
                 self.save_this_branch_buffer(frame_buffer, self.this_branch)
 
     def return_line(self):
+        if int(self.this_line.origin_branch.trend) in self.tmap.secant_not_picked_dir:
+            self.tmap.secant_not_picked_dir.remove(int(self.this_line.origin_branch.trend))
+            self.tmap.secant_picked_dir.append(int(self.this_line.origin_branch.trend))
+
+        used_names = []
+        for branch in self.branch_buffers:
+            for frame in branch[0]:
+                if frame.labels:
+                    for label in frame.labels:
+                        used_names.append(label.render_manifold.text)
+        self.tmap.texterator.finalize_removal(actual_used_names=used_names, pool=self.this_line.style_details['station_type'])
+
         self.this_line.unload_branch_buffer(self.branch_buffers)
         return self.this_line
 
@@ -70,6 +81,9 @@ class gLineSecant():
             next_frame = gLineSecantHelpers.BufferFrame(Straight(current_spatial, gLineSecantHelpers.length_normal_dist()))
 
             error, next_frame = self.line_collision_check(next_frame, frame_buffer)
+            if error is not None:
+                return "text_error", next_frame, -1
+            error = self.line_parallel_check(next_frame, frame_buffer)
             if error is not None:
                 return "text_error", next_frame, -1
 
@@ -141,6 +155,8 @@ class gLineSecant():
         error, next_frame = self.line_collision_check(next_frame, frame_buffer)
         error, end_frame = self.line_collision_check(end_frame, frame_buffer)
 
+        next_frame = gLineSecantHelpers.gen_stations(next_frame, self.tmap.texterator, self.this_line.style_details['station_type'])
+
         return None, frame_buffer + [next_frame, end_frame], 0
 
 
@@ -164,6 +180,18 @@ class gLineSecant():
             inters.append(InterchangeNode(interchange_spatial))
         next_frame.interchanges = inters
         return None, next_frame
+
+    def line_parallel_check(self, next_frame, frame_buffer):
+        temporary_frames = []
+        temporary_frames += frame_buffer
+        for branch in self.branch_buffers:
+            # Each branch is a list [branch_buffer, this_branch]
+            temporary_frames += branch[0]
+        parallels = self.tmap.parallel_check(next_frame.geometry, temporary_frames, self.this_line)
+        for parallel in parallels:
+            if parallel.distance_to < opt.parallel_min_distance:
+                return "too_close"
+        return None
 
 
 

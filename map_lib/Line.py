@@ -38,6 +38,7 @@ class Line():
 
 
 
+
 class Branch():
     def __init__(self, origin_spatial, trend):
         self.origin_spatial = origin_spatial
