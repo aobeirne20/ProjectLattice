@@ -11,6 +11,18 @@ art_style_guide = {
         'background': 'white',
         'name': 'Anti-color'
     },
+    "Offwhite Color": {
+        'details': 'color',
+        'river': 'normal',
+        'background': 'offwhite',
+        'name': 'Color'
+    },
+    "Yellow Color": {
+        'details': 'color',
+        'river': 'normal',
+        'background': 'offyellow',
+        'name': 'Color'
+    },
 
     "Night": {
         'details': 'color',

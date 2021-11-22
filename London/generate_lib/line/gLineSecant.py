@@ -156,6 +156,7 @@ class gLineSecant():
         error, end_frame = self.line_collision_check(end_frame, frame_buffer)
 
         next_frame = gLineSecantHelpers.gen_stations(next_frame, self.tmap.texterator, self.this_line.style_details['station_type'])
+        end_frame = gLineSecantHelpers.get_terminus_station(end_frame, self.tmap.texterator, self.this_line.style_details['station_type'])
 
         return None, frame_buffer + [next_frame, end_frame], 0
 

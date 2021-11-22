@@ -58,8 +58,8 @@ station_text_size = 10 #If so, must change single_line_width
 station_font = "fonts/ITC - JohnstonITCPro-Medium.otf"
 
 # IMAGE OPTIONS ----------------------------------------------------------------------------------------
-s_antialiasing = 1
-s_outputimage = 1
+s_antialiasing = 3
+s_outputimage = 2
 use_multiprocessing = False
 
 # PINATA OPTIONS ---------------------------------------------------------------------------------------

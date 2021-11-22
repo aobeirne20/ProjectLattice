@@ -2,7 +2,7 @@ import numpy as np
 
 from geometry_lib.Spatial import Spatial
 from geometry_lib.degree import degree
-from geometry_lib.StationGeometry import Station
+from geometry_lib.StationGeometry import Station, Terminus
 from geometry_lib.SpecialGeometry import TextBox
 
 from options import prime as opt
@@ -86,6 +86,15 @@ def curve_change_choice(current_trend, current_spatial):
     return arc_change
 
 
+def get_terminus_station(end_frame, texterator, station_type):
+    for station in end_frame.stations:
+        print(type(station))
+        if type(station) is Terminus:
+            end_frame.labels.append(TextBox(spatial_station=station.spatial_station,
+                                            text=texterator.get_name(station_type)[0],
+                                            offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
+    return end_frame
+
 
 
 
@@ -114,9 +123,20 @@ def gen_stations_recursor(current_pos, seg_length, min_sep, next_frame, texterat
             y = next_frame.geometry.spatial1.y + next_frame.geometry.spatial1.o.uy * current_pos
             o = next_frame.geometry.spatial1.o
 
+            names_spacing_list = texterator.get_name(station_type)
+
+            if o == 0 or o == 4:
+                if len(names_spacing_list) > 1:
+                    name = names_spacing_list[1]
+                else:
+                    name = names_spacing_list[0]
+            else:
+                name = names_spacing_list[0]
+
+
             next_frame.stations.append(Station(spatial1=Spatial(x, y, o), opposite=False, tick_length=opt.tick_length))
             next_frame.labels.append(TextBox(spatial_station=next_frame.stations[-1].spatial_station,
-                                             text=texterator.get_name(station_type)[0],
+                                             text=name,
                                              offset=0, font_name=opt.station_font, font_size=opt.station_text_size, special_fix=None))
         current_pos += sep
         if np.random.choice([True, False], p=[0.5, 0.5]):

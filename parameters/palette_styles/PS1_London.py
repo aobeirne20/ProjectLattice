@@ -1,5 +1,7 @@
 palette_style_guide = {
     "white": (255, 255, 255, 255),
+    "offwhite": (243, 243, 244, 255),
+    "offyellow": (255, 253, 233, 255),
     "black": (0, 0, 0, 255),
     "darkblue": (53, 85, 123, 255),
     "corporate_blue": (0, 25, 168, 255),

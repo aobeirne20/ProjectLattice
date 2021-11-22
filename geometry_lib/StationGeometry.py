@@ -26,15 +26,15 @@ class Terminus(StationGeometry):
 
         spatial_t1 = Spatial(x=spatial1.x + station_o_1.vx(tick_length),
                                   y=spatial1.y + station_o_1.vy(tick_length),
-                                  o=spatial1.o)
+                                  o=station_o_1)
         spatial_t2 = Spatial(x=spatial1.x + station_o_2.vx(tick_length),
                                   y=spatial1.y + station_o_2.vy(tick_length),
-                                  o=spatial1.o)
+                                  o=station_o_2)
 
         if opposite:
-            self.spatial_station = spatial_t1
-        else:
             self.spatial_station = spatial_t2
+        else:
+            self.spatial_station = spatial_t1
 
         self.logic_manifold = LineString([spatial_t1.t, spatial_t2.t])
         self.render_manifold = (spatial_t1.x, spatial_t1.y, spatial_t2.x, spatial_t2.y)
